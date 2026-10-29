@@ -9,7 +9,7 @@
 Liquidify is an **unofficial, open-source modification of the TIDAL Android app**. It combines a Liquid Glass-inspired interface with patches that preserve TIDAL's native navigation and playback behavior. The included **Liquidify Manager**, based on [Radiant Lyrics](https://github.com/meowarex/rl-mobile), handles patch selection and installation.
 
 > [!IMPORTANT]
-> **Current release: 1.1.0 Beta.** Liquidify patches target **TIDAL 2.200.0 (10004)** on **Android 13 or newer**. The Manager itself supports Android 7 or newer, but that does **not** lower the patched app's Android requirement. Other TIDAL versions are not supported unless explicitly documented.
+> **Latest published release: 1.1.0 Beta.** This branch prepares **1.1.1 Beta 1**. Liquidify patches target **TIDAL 2.200.0 (10004)** on **Android 13 or newer**. The Manager itself supports Android 7 or newer, but that does **not** lower the patched app's Android requirement. Other TIDAL versions are not supported unless explicitly documented.
 
 ## Features
 
@@ -96,7 +96,7 @@ On Windows, use `gradlew.bat` instead of `./gradlew`. Debug builds are not inter
 
 ### Releases and verification
 
-The [Build workflow](.github/workflows/build.yml) validates prepared patches and tests the Manager. The [Release workflow](.github/workflows/release.yml) rebuilds the patch payload, tests the Manager, verifies signatures and bundled assets, and publishes versioned artifacts.
+The [Build workflow](.github/workflows/build.yml) validates prepared patches and tests the Manager. Run the [Release workflow](.github/workflows/release.yml) manually on the intended commit to rebuild the patch payload, test and sign the Manager, verify the assets, and create a beta release draft for review. Publishing the draft is a separate step. The workflow refuses to overwrite an existing tag or release.
 
 Release downloads include the Manager APK, `patches.zip`, `manifest.json`, `data.json`, and `SHA256SUMS`. Use the checksums to verify downloaded release files.
 

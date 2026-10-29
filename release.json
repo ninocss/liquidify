@@ -1,8 +1,8 @@
 {
-  "version": "1.1.0-beta",
-  "title": "Liquidify 1.1.0 Beta",
-  "tag": "v1.1.0-beta",
-  "managerVersionCode": 72,
+  "version": "1.1.1-beta.1",
+  "title": "Liquidify 1.1.1 Beta 1",
+  "tag": "v1.1.1-beta.1",
+  "managerVersionCode": 73,
   "repository": "ninocss/liquidify",
   "patches": "patches/patches.zip",
   "prerelease": true,

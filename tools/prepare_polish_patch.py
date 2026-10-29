@@ -37,6 +37,12 @@ if __name__=='__main__':
 
 
 def mini_skip(text):
+    padding = '''    .line 37
+    invoke-static {v9, v10, v12, v6, v8}, Landroidx/compose/foundation/layout/PaddingKt;->padding-qDBjuR0(Landroidx/compose/ui/Modifier;FFFF)Landroidx/compose/ui/Modifier;'''
+    assert text.count(padding)==1
+    # The stock row uses 12 dp above and 8 dp below. Equal padding keeps
+    # artwork, labels and transport centered within the capsule.
+    text=text.replace(padding, '    move v8, v12\n\n'+padding)
     start=text.index('    .line 156\n    sget v4, Lcom/tidal/android/strings/R$string;->play_next:I')
     end=text.index('    .line 162',start)
     body=text[start:end]

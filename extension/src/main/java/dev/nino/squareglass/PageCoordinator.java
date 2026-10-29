@@ -111,6 +111,7 @@ public final class PageCoordinator {
         final WeakHashMap<View,Drawable> materials=new WeakHashMap<>();
         final int[] xy=new int[2];
         RecyclerView primary;HeroDecoration hero;View heroView, movingAction,chromeSurface;boolean watching,dark;int tone;
+        ColorDrawable statusScrim;
         int inset=-1,chromeTone,chromeItems=-1;
         Page(View root,String title,boolean search,boolean detail,HeroSnapshot snapshot) { this.root=root;this.title=title;this.search=search;this.detail=detail;this.snapshot=snapshot; }
         int dp(float n) {return Math.round(n*root.getResources().getDisplayMetrics().density);}
@@ -287,6 +288,12 @@ public final class PageCoordinator {
         void header() {
             View bar=root.findViewById(0x7f0b06ef);if(bar==null)bar=root.findViewById(0x7f0b06f0);if(bar==null)bar=root.findViewById(0x7f0b0302);
             if(bar==null)return;
+            if (("Playlists".equals(title) || "Albums".equals(title)) && chromeSurface==null && inset>0) {
+                if(statusScrim==null) { statusScrim=new ColorDrawable(); root.getOverlay().add(statusScrim); }
+                statusScrim.setColor((tone & 0x00ffffff) | 0xe0000000);
+                root.getLocationOnScreen(xy);
+                statusScrim.setBounds(0,0,root.getWidth(),Math.max(0,inset-xy[1]));
+            }
             bar.setElevation(dp(4));if(chromeSurface==null && inset>=0 && !title.equals("Downloads"))toolbarInset(bar,inset);
             View scrim=chromeSurface==null?bar:chromeSurface;
             HeaderFade fade=scrim.getBackground() instanceof HeaderFade?(HeaderFade)scrim.getBackground():new HeaderFade(tone);

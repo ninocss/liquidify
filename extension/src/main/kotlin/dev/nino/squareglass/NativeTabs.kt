@@ -13,12 +13,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.text.font.FontWeight
@@ -33,18 +36,31 @@ import dev.nino.squareglass.material.shapes.ContinuousCapsule
 
 /** Square's actual draggable control, connected to TIDAL's original models and callbacks. */
 object NativeTabs {
+    data class TabOption(val key: String, val label: String)
+    var options by androidx.compose.runtime.mutableStateOf<List<TabOption>>(emptyList())
+        private set
+    private fun key(context: android.content.Context, item: NativeTab): String =
+        "navTab_" + context.resources.getResourceEntryName(item.b)
+
     @JvmStatic
     @Composable
     fun Render(selected: Int, items: List<NativeTab>, onItem: (NativeTab) -> Unit, modifier: Modifier) {
         if (items.isEmpty()) return
+        DesignState.revision
+        val context = LocalContext.current
+        val available = items.map { TabOption(key(context, it), context.getString(it.b)) }
+        androidx.compose.runtime.SideEffect { if (options != available) options = available }
+        val visible = items.filter { SquareSettings.flag(key(context, it), true) }.ifEmpty { listOf(items.first()) }
+        var visibleSelected = 0
+        for (i in visible.indices) if (visible[i] == items.getOrNull(selected)) visibleSelected = i
         val dark = NativeGlass.dark
         val ink = Color(SquarePalette.ink(dark))
         val iconInk = ink
-        val here = rememberUpdatedState(selected)
+        val here = rememberUpdatedState(visibleSelected)
         val readHere = remember { { here.value } }
-        val currentItems = rememberUpdatedState(items)
+        val currentItems = rememberUpdatedState(visible)
         val currentAction = rememberUpdatedState(onItem)
-        val pulses=remember {mutableStateOf(List(items.size) {0})}
+        val pulses=remember {mutableStateOf(List(visible.size) {0})}
         val select: (Int) -> Unit = remember {
             { index ->
                 val list = currentItems.value
@@ -62,14 +78,14 @@ object NativeTabs {
                 selectedTabIndex = readHere,
                 onTabSelected = select,
                 backdrop = NativeBackdrop.accessory,
-                tabsCount = items.size,
+                tabsCount = visible.size,
                 modifier = modifier.clip(ContinuousCapsule()).selectableGroup(),
             ) {
                 var index = 0
-                while (index < items.size) {
-                    val item = items[index]
+                while (index < visible.size) {
+                    val item = visible[index]
                     val tabIndex = index
-                    val isSelected = index == selected
+                    val isSelected = item == items.getOrNull(selected)
                     LiquidBottomTab(onClick = { select(tabIndex) }, modifier = Modifier.semantics { this.selected = isSelected }) {
                         Box {
                             Icon(painterResource(item.a), contentDescription = null, tint = iconInk, modifier = IconMotion.icon(Modifier.size(25.dp),tabIndex,pulses.value.getOrNull(tabIndex) ?: 0))

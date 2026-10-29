@@ -58,8 +58,8 @@ android {
         applicationId = "dev.nino.squareglass.manager"
         minSdk = 24
         targetSdk = 36
-        versionCode = 72
-        versionName = "1.1.0-beta"
+        versionCode = 73
+        versionName = "1.1.1-beta.1"
 
         vectorDrawables {
             useSupportLibrary = true

@@ -58,6 +58,7 @@
         "dev/nino/squareglass/DesignEntry$26.smali",
         "dev/nino/squareglass/DesignEntry$27.smali",
         "dev/nino/squareglass/DesignEntry$28.smali",
+        "dev/nino/squareglass/DesignEntry$29.smali",
         "dev/nino/squareglass/DesignEntry$3.smali",
         "dev/nino/squareglass/DesignEntry$4.smali",
         "dev/nino/squareglass/DesignEntry$5.smali",
@@ -287,6 +288,8 @@
         "dev/nino/squareglass/NativeTabs$6.smali",
         "dev/nino/squareglass/NativeTabs$7.smali",
         "dev/nino/squareglass/NativeTabs$8.smali",
+        "dev/nino/squareglass/NativeTabs$9.smali",
+        "dev/nino/squareglass/NativeTabs$TabOption.smali",
         "dev/nino/squareglass/NativeTabs.smali",
         "dev/nino/squareglass/NativeTheme.smali",
         "dev/nino/squareglass/NativeViewBackdrop$0.smali",
@@ -707,7 +710,7 @@
         "dev/nino/squareglass/material/shapes/path/PathSegmentsKt.smali"
       ],
       "title": "Liquidify \u00b7 Glass navigation",
-      "description": "AndroidLiquidGlass navigation, mini-player and runtime design settings. Keeps native TIDAL routes and actions. Requires Liquidify Manager 1.0.0 Beta.",
+      "description": "AndroidLiquidGlass navigation, mini-player and runtime design settings. Keeps native TIDAL routes and actions. Requires Liquidify Manager 1.1.1-beta.1.",
       "default": true,
       "disables": [
         "EnableLegacyUi",
@@ -1693,7 +1696,7 @@
       ]
     }
   ],
-  "releaseVersion": "1.0.0-beta",
+  "releaseVersion": "1.1.1-beta.1",
   "name": "Liquidify",
   "editor": "ninocss",
   "compatibility": {

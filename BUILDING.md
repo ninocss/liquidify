@@ -1,4 +1,4 @@
-# Building Liquidify 1.1.0 Beta
+# Building Liquidify 1.1.1 Beta 1
 
 ## Manager
 
@@ -50,7 +50,7 @@ python -m unittest discover -s tests -v
 ```
 
 The historical packaging script name is retained, but emits
-`dist/Liquidify-1.1.0-beta-patches.zip`. Copy that file to `patches/patches.zip`
+`dist/Liquidify-1.1.1-beta.1-patches.zip`. Copy that file to `patches/patches.zip`
 and its `manifest.json` to `patches/manifest.json`; run the release validator.
 `host-stubs` contains compile-only native ABI declarations and must not ship.
 Patch builds reuse the host Compose/Kotlin runtime. TIDAL binaries, keys and
@@ -66,13 +66,14 @@ Verify the packaged fallback with `python tools/verify_manager_bundle.py <manage
 GitHub commit history and release updates require a publicly accessible repository;
 the Manager does not authenticate to private repositories.
 
-The single root workflow `.github/workflows/release.yml` runs on a matching
-version tag or manual dispatch. Its first job builds the patches from source,
+Run the root workflow `.github/workflows/release.yml` manually on the intended
+commit. Its first job builds the patches from source,
 runs the patch tests and retains the generated ZIP and build reports. Its second
 job downloads that exact payload, builds and tests Manager with JDK 21, and verifies
 that the embedded ZIP, bundled patch list and build metadata match the release.
 It uploads the signed Manager APK, `patches.zip`, `manifest.json`, `data.json`
-and `SHA256SUMS` to a draft before publishing it. The Manager uses the release's
+and `SHA256SUMS` to a beta draft. Review and publish the draft separately. The
+workflow refuses to replace an existing tag or release. The Manager uses the release's
 patch list and metadata for online installation, with the identical bundled ZIP
 available when the release cannot be reached.
 GitHub automatically offers the matching repository source archives.

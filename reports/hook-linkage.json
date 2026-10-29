@@ -1,7 +1,7 @@
 {
   "passed": true,
   "hostClasses": 77879,
-  "extensionClasses": 692,
+  "extensionClasses": 695,
   "duplicateClasses": [],
   "missingTypes": [],
   "missingMethods": [],
@@ -11,5 +11,5 @@
     "methods": 114,
     "fields": 1
   },
-  "hooksDexSha256": "4011e705c787a22fedc6345511d613cf2ea46891c4843302682f9857f57ab2cf"
+  "hooksDexSha256": "431460e9448a4e538f8e1304d1cbe1b8aa13708c6658b4e891af82b82464fad4"
 }

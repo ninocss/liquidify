@@ -84,7 +84,7 @@
     "143-square-player-menu-source.patch": "a4bea9e917923d106f1a0ac31337c6bd0df623c881c4bdd7ae0a17be53d7d51f",
     "144-square-queue-glass.patch": "2ebeb9cff5f3e95b9b194f6deda2274e5c05312b4821a16322b6a271dc671050",
     "145-square-text-field-glass.patch": "849525d4bf1d8b1ea788f1b549f18f384134efebb236a5d6cae297d0b1b1b651",
-    "146-square-gesture-mini-controls.patch": "53e137e96acd3292c498c0ef6a48b91fa8515fd7d85e64aa3a4c1c5890f9342f",
+    "146-square-gesture-mini-controls.patch": "ef7416c0bb331f0b2ab707a9f5f16cc527334eaceda5157e7103e1d38b2ae3cc",
     "147-square-recommendation-batch.patch": "964091aaba4a466a6d527ddafd8a9f69cd79592ab4e3fe6d71b3bae67f66ee63",
     "148-square-recommendation-result.patch": "af6f293de9eb2438a8625cba05e9723b73a364f248d673336aa37565799a8d99",
     "149-square-recommendation-position.patch": "1405796b956005646a47b5052984a77b2adffe25e71b81a86cabe6a1f2e79dd7",
@@ -107,11 +107,11 @@
   },
   "source": "Fresh pinned stock APK disassembly",
   "expected": "research/probe-hook-smali",
-  "extensionDexSha256": "4cfdbedf863cab9a0ebc94bb883aee97c679a09e87563eba4c7b7e981830e979",
+  "extensionDexSha256": "13864c775f0fb2dc8f2253b80844fe8b63e432605003244d8715a019a2fcba95",
   "hookLinkage": {
     "passed": true,
     "hostClasses": 77879,
-    "extensionClasses": 692,
+    "extensionClasses": 695,
     "duplicateClasses": [],
     "missingTypes": [],
     "missingMethods": [],
@@ -121,7 +121,7 @@
       "methods": 114,
       "fields": 1
     },
-    "hooksDexSha256": "4011e705c787a22fedc6345511d613cf2ea46891c4843302682f9857f57ab2cf"
+    "hooksDexSha256": "431460e9448a4e538f8e1304d1cbe1b8aa13708c6658b4e891af82b82464fad4"
   },
   "result": "Strict Manager diff engine verified 101 patches against baksmali output"
 }

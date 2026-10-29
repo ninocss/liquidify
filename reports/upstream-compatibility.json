@@ -1,6 +1,6 @@
 {
   "upstreamCommit": "2cb7100baef6f9c05a79a761fa51dfe898708d9b",
-  "extensionDexSha256": "4cfdbedf863cab9a0ebc94bb883aee97c679a09e87563eba4c7b7e981830e979",
+  "extensionDexSha256": "13864c775f0fb2dc8f2253b80844fe8b63e432605003244d8715a019a2fcba95",
   "engine": "Manager upstream fuzzy-context algorithm, assembly and introduced-reference linkage; Liquidify hooks applied",
   "patchSha256": {
     "collection-backdrop-liquidify.patch": "96a15cd3a790cbb978cd3b7418d009a729ee492fc2382b4f3162d55fcdada8af",
@@ -23,7 +23,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 692,
+        "extensionClasses": 695,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -36,7 +36,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 701,
+        "extensionClasses": 704,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -49,7 +49,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 701,
+        "extensionClasses": 704,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -62,7 +62,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 701,
+        "extensionClasses": 704,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -75,7 +75,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 701,
+        "extensionClasses": 704,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -88,7 +88,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 701,
+        "extensionClasses": 704,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -101,7 +101,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 701,
+        "extensionClasses": 704,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -114,7 +114,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 694,
+        "extensionClasses": 697,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -127,7 +127,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 694,
+        "extensionClasses": 697,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -140,7 +140,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 702,
+        "extensionClasses": 705,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -153,7 +153,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 702,
+        "extensionClasses": 705,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -166,7 +166,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 702,
+        "extensionClasses": 705,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -179,7 +179,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 695,
+        "extensionClasses": 698,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -192,7 +192,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 695,
+        "extensionClasses": 698,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -205,7 +205,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 703,
+        "extensionClasses": 706,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -218,7 +218,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 703,
+        "extensionClasses": 706,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],
@@ -231,7 +231,7 @@
       "linkage": {
         "passed": true,
         "hostClasses": 77879,
-        "extensionClasses": 703,
+        "extensionClasses": 706,
         "duplicateClasses": [],
         "missingTypes": [],
         "missingMethods": [],

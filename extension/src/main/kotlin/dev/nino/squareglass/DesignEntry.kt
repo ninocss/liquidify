@@ -132,6 +132,14 @@ object DesignEntry {
                 }
                 Choice("Glass",listOf("Liquid","Frosted","Off"),SquareSettings.preset()) { SquareSettings.preset(it) }
                 Toggle("Glass navigation","nav")
+                Section("Navigation tabs")
+                NativeTabs.options.forEach { option ->
+                    val enabled = SquareSettings.flag(option.key, true)
+                    val count = NativeTabs.options.count { SquareSettings.flag(it.key, true) }
+                    if (enabled && count <= 1) {
+                        Row(option.label, "At least one tab must remain visible") { }
+                    } else Toggle(option.label, option.key)
+                }
                 Toggle("Glass mini-player","mini")
                 Toggle("Glass player","player")
                 Toggle("Reduce motion","reduceMotion",false)
