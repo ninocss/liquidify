@@ -21,11 +21,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceIn
@@ -49,6 +52,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.sign
+import dev.nino.squareglass.NativeGlass
+import dev.nino.squareglass.SquarePalette
 import dev.nino.squareglass.SquareSettings
 
 @Composable
@@ -60,9 +65,17 @@ fun LiquidBottomTabs(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
-    // Use the catalog's light material in both themes for the requested black
-    // icons. Its blue, captured duplicate content layer is deliberately omitted.
-    val containerColor = Color(0xFFFAFAFA).copy(0.4f)
+    val dark = NativeGlass.dark
+    val isLightTheme = !dark
+    val accentColor =
+        if (isLightTheme) Color(0xFF0088FF)
+        else Color(0xFF0091FF)
+    val containerColor = if (SquareSettings.glass("nav")) {
+        val opacity = SquareSettings.opacity()
+        if (dark) Color(0xFF1E2024).copy(alpha = opacity) else Color(0xFFFAFAFA).copy(alpha = opacity)
+    } else {
+        Color(SquarePalette.surface(dark))
+    }
     val tabsBackdrop = rememberLayerBackdrop()
     BoxWithConstraints(
         modifier,
@@ -97,7 +110,7 @@ fun LiquidBottomTabs(
                 onDragStopped = {
                     val targetIndex = targetValue.fastRoundToInt().fastCoerceIn(0, tabsCount - 1)
                     animateToValue(targetIndex.toFloat())
-                    if(targetIndex != selectedTabIndex())onTabSelected(targetIndex)
+                    onTabSelected(targetIndex)
                     animationScope.launch {
                         if(SquareSettings.motion())offsetAnimation.animateTo(
                             0f,
@@ -137,9 +150,8 @@ fun LiquidBottomTabs(
             )
         }
 
-        Box(
+        Row(
             Modifier
-                .layerBackdrop(tabsBackdrop)
                 .graphicsLayer {
                     translationX = panelOffset
                 }
@@ -148,7 +160,7 @@ fun LiquidBottomTabs(
                     shape = { Capsule() },
                     effects = {
                         vibrancy()
-                        blur(8f.dp.toPx())
+                        blur(SquareSettings.blur().dp.toPx())
                         if (SquareSettings.motion() && SquareSettings.preset() == 0) {
                             val refraction = SquareSettings.refraction()
                             lens((24f * refraction).dp.toPx(), (32f * refraction).dp.toPx())
@@ -168,11 +180,52 @@ fun LiquidBottomTabs(
                 .then(interactiveHighlight.modifier)
                 .height(64f.dp)
                 .fillMaxWidth()
-                .padding(4f.dp)
+                .padding(4f.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            content = content
         )
 
-        // Capture only the catalog's glass panel, never a second icon row.
-        // Glyphs and their existing animations are composed once above it.
+        CompositionLocalProvider(
+            LocalLiquidBottomTabScale provides {
+                lerp(1f, 1.2f, dampedDragAnimation.pressProgress)
+            }
+        ) {
+            Row(
+                Modifier
+                    .clearAndSetSemantics {}
+                    .alpha(0f)
+                    .layerBackdrop(tabsBackdrop)
+                    .graphicsLayer {
+                        translationX = panelOffset
+                    }
+                    .drawBackdrop(
+                        backdrop = backdrop,
+                        shape = { Capsule() },
+                        effects = {
+                            val progress = dampedDragAnimation.pressProgress
+                            vibrancy()
+                            blur(SquareSettings.blur().dp.toPx())
+                            lens(
+                                24f.dp.toPx() * progress,
+                                24f.dp.toPx() * progress
+                            )
+                        },
+                        highlight = {
+                            val progress = dampedDragAnimation.pressProgress
+                            Highlight.Default.copy(alpha = progress)
+                        },
+                        onDrawSurface = { drawRect(containerColor) }
+                    )
+                    .then(interactiveHighlight.modifier)
+                    .height(56f.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 4f.dp)
+                    .graphicsLayer(colorFilter = ColorFilter.tint(accentColor)),
+                verticalAlignment = Alignment.CenterVertically,
+                content = content
+            )
+        }
+
         Box(
             Modifier
                 .padding(horizontal = 4f.dp)
@@ -181,6 +234,8 @@ fun LiquidBottomTabs(
                         if (isLtr) dampedDragAnimation.value * tabWidth + panelOffset
                         else size.width - (dampedDragAnimation.value + 1f) * tabWidth + panelOffset
                 }
+                .then(interactiveHighlight.gestureModifier)
+                .then(dampedDragAnimation.modifier)
                 .drawBackdrop(
                     backdrop = rememberCombinedBackdrop(backdrop, tabsBackdrop),
                     shape = { Capsule() },
@@ -216,43 +271,15 @@ fun LiquidBottomTabs(
                     },
                     onDrawSurface = {
                         val progress = dampedDragAnimation.pressProgress
-                        drawRect(Color.Black.copy(0.1f), alpha = 1f - progress)
+                        drawRect(
+                            if (isLightTheme) Color.Black.copy(0.1f)
+                            else Color.White.copy(0.1f),
+                            alpha = 1f - progress
+                        )
                         drawRect(Color.Black.copy(alpha = 0.03f * progress))
                     }
                 )
                 .height(56f.dp)
-                .fillMaxWidth(1f / tabsCount)
-        )
-
-        CompositionLocalProvider(
-            LocalLiquidBottomTabScale provides {
-                lerp(1f, 1.2f, dampedDragAnimation.pressProgress)
-            }
-        ) {
-            Row(
-                Modifier
-                    .graphicsLayer { translationX = panelOffset }
-                    .height(64.dp)
-                    .fillMaxWidth()
-                    .padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                content = content
-            )
-        }
-
-        // Keep the original indicator hit area above the clickable tabs. This
-        // layer handles dragging only; it never draws or captures tab content.
-        Box(
-            Modifier
-                .padding(horizontal = 4.dp)
-                .graphicsLayer {
-                    translationX =
-                        if (isLtr) dampedDragAnimation.value * tabWidth + panelOffset
-                        else size.width - (dampedDragAnimation.value + 1f) * tabWidth + panelOffset
-                }
-                .then(interactiveHighlight.gestureModifier)
-                .then(dampedDragAnimation.modifier)
-                .height(56.dp)
                 .fillMaxWidth(1f / tabsCount)
         )
     }

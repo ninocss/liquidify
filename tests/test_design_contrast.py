@@ -56,19 +56,19 @@ class DesignContrast(unittest.TestCase):
         self.assertIn('Color(0xFF33343A) else Color.White',source)
         self.assertIn('SquareSettings.readableOpacity(dark)',source)
 
-    def test_library_navigation_has_one_animated_icon_row(self):
-        tabs=(ROOT/'extension/src/main/kotlin/dev/nino/squareglass/NativeTabs.kt').read_text()
-        source=(ROOT/'extension/src/main/kotlin/dev/nino/squareglass/material/LiquidBottomTabs.kt').read_text()
-        self.assertIn('val iconInk = Color.Black',tabs)
-        self.assertIn('IconMotion.icon(',tabs)
-        self.assertEqual(source.count('content = content'),1)
-        self.assertNotIn('ColorFilter.tint',source)
-        self.assertNotIn('accentColor',source)
-        self.assertIn('rememberCombinedBackdrop(backdrop, tabsBackdrop)',source)
-        # The captured layer contains the glass panel only, so the selection
-        # lens cannot project a second row of animated/tinted tab glyphs.
-        captured=source[source.index('.layerBackdrop(tabsBackdrop)'):source.index('// Capture only')]
-        self.assertNotIn('content = content',captured)
+    def test_library_navigation_has_native_reflection_layer(self):
+        tabs = (ROOT / 'extension/src/main/kotlin/dev/nino/squareglass/NativeTabs.kt').read_text()
+        source = (ROOT / 'extension/src/main/kotlin/dev/nino/squareglass/material/LiquidBottomTabs.kt').read_text()
+        self.assertIn('IconMotion.icon(', tabs)
+        self.assertIn('ColorFilter.tint(accentColor)', source)
+        self.assertIn('rememberCombinedBackdrop(backdrop, tabsBackdrop)', source)
+        self.assertIn('clearAndSetSemantics {}', source)
+        self.assertIn('.layerBackdrop(tabsBackdrop)', source)
+        self.assertIn('.alpha(0f)', source)
+        # Reflection capture row must capture content with accentColor tint for tab refraction
+        capture_idx = source.index('.layerBackdrop(tabsBackdrop)')
+        capture_end = source.index('content = content', capture_idx)
+        self.assertIn('ColorFilter.tint(accentColor)', source[capture_idx:capture_end])
 
     def test_static_muted_labels_on_all_native_surfaces(self):
         rows={parts[1]:parts for line in (ROOT/'mappings/resource-palette.tsv').read_text().splitlines()
