@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import dev.nino.squareglass.material.shapes.ContinuousCapsule
 import java.lang.ref.WeakReference
 import java.util.WeakHashMap
 import dev.nino.squareglass.material.isGlassAllowed
@@ -75,7 +76,7 @@ object PageGlass {
     }
     @Composable private fun Surface(radius: Float,emphasized: Boolean) {
         DesignState.revision
-        val shape=RoundedCornerShape(radius.dp)
+        val shape = if (radius >= 24f) ContinuousCapsule() else RoundedCornerShape(radius.dp)
         val modifier=if(SquareSettings.preset()!=2 && isGlassAllowed()) {
             GlassPanels.panel(Modifier.fillMaxSize(),radius,emphasized)
         } else {
