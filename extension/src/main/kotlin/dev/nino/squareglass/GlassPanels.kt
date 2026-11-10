@@ -35,6 +35,7 @@ object GlassPanels {
         return original.drawBackdrop(
             source,
             shape = { shape },
+            effects = {},
             highlight = { Highlight.Default },
             shadow = { Shadow(radius = if (emphasized) 8.dp else 4.dp, alpha = if (dark) 0.35f else 0.15f) },
             onDrawSurface = {

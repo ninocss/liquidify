@@ -13,7 +13,7 @@ object GlassHost {
     fun wrapNative(activity: Activity, content: @Composable () -> Unit): @Composable () -> Unit {
         SquareSettings.initialize(activity)
         val page = activity.findViewById<android.view.View>(0x7f0b02e6)
-        val initialBase = SquarePalette.base(NativeGlass.dark)
+        val initialBase = SquarePalette.base(SquarePalette.isDark())
         activity.window.setBackgroundDrawable(ColorDrawable(initialBase))
         activity.window.statusBarColor = initialBase
         activity.window.navigationBarColor = initialBase
