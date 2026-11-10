@@ -2,6 +2,7 @@
 package dev.nino.squareglass;
 
 import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsetsController;
@@ -28,9 +29,17 @@ public final class SystemBarTheme implements ViewTreeObserver.OnPreDrawListener,
             WindowInsetsController controller = window.getInsetsController();
             int mask = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS |
                     WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
-            int desired = SquarePalette.isDark() ? 0 : mask;
+            boolean dark = SquarePalette.isDark();
+            int desired = dark ? 0 : mask;
             if (controller != null && (controller.getSystemBarsAppearance() & mask) != desired)
                 controller.setSystemBarsAppearance(desired, mask);
+            if (!player) {
+                int baseColor = SquarePalette.base(dark);
+                window.setBackgroundDrawable(new ColorDrawable(baseColor));
+                window.setStatusBarColor(baseColor);
+                window.setNavigationBarColor(baseColor);
+                decor.setBackgroundColor(baseColor);
+            }
         }
         return true;
     }
