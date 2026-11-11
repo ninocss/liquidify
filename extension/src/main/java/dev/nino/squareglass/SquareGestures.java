@@ -159,7 +159,8 @@ public final class SquareGestures implements View.OnTouchListener, View.OnAttach
             canvas.save(); canvas.clipRect(left,bounds.top,right,bounds.bottom);
             paint.setStyle(Paint.Style.FILL);
             paint.setColor(action==1?0xff8054d9:action==2?0xffc86c0b:0xffcf3558);
-            canvas.drawRect(left,bounds.top,right,bounds.bottom,paint);
+            float cornerRadius = 14 * density;
+            canvas.drawRoundRect(left, bounds.top, right, bounds.bottom, cornerRadius, cornerRadius, paint);
             float cx=(left+right)/2,cy=bounds.exactCenterY();
             canvas.save(); canvas.translate(cx,cy-7*density);
             float scale=density*(.88f+.12f*Math.min(1,progress)); canvas.scale(scale,scale);
@@ -175,7 +176,7 @@ public final class SquareGestures implements View.OnTouchListener, View.OnAttach
             }
             canvas.drawPath(icon,paint); canvas.restore();
             paint.setStyle(Paint.Style.FILL); paint.setTextAlign(Paint.Align.CENTER); paint.setTextSize(11*textScale);
-            canvas.drawText(action==2?"Play last":label(action),cx,cy+22*density,paint); canvas.restore();
+            canvas.drawText(label(action),cx,cy+22*density,paint); canvas.restore();
         }
         @Override public void setAlpha(int alpha) { paint.setAlpha(alpha); }
         @Override public void setColorFilter(ColorFilter filter) { paint.setColorFilter(filter); }

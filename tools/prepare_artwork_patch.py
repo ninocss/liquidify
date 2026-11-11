@@ -83,9 +83,6 @@ def player_top_edge(text):
     start = text.index('.method public static final e(')
     end = text.index('.method public static final f(', start)
     body = text[start:end]
-    top_arrangement = 'invoke-virtual {v8}, Landroidx/compose/foundation/layout/Arrangement;->getTop()Landroidx/compose/foundation/layout/Arrangement$Vertical;'
-    assert body.count(top_arrangement) == 1
-    body = body.replace(top_arrangement, 'invoke-virtual {v8}, Landroidx/compose/foundation/layout/Arrangement;->getCenter()Landroidx/compose/foundation/layout/Arrangement$Vertical;')
     needle = '    .line 151\n    invoke-static {v10, v3}, Landroidx/compose/ui/ComposedModifierKt;->materializeModifier('
     assert body.count(needle) == 1
     body = body.replace(needle, '''    invoke-static {v3, v10, v12}, Ldev/nino/squareglass/PlayerArtwork;->frame(Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)Landroidx/compose/ui/Modifier;

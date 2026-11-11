@@ -21,5 +21,16 @@ class PlayButtonDesignTest(unittest.TestCase):
         # For 48dp button, capsule radius should be 24dp
         self.assertTrue("PageGlass.install(view, 24, primary)" in source or "PageGlass.install(view,24,primary)" in source)
 
+    def test_player_buttons_remove_circular_press_ripple(self):
+        native_glass = (ROOT / 'extension/src/main/kotlin/dev/nino/squareglass/NativeGlass.kt').read_text()
+        # Custom playerIconButton must disable Material 3 ripple indication to eliminate white/black circle
+        self.assertIn("fun playerIconButton(", native_glass)
+        self.assertIn("indication = null", native_glass)
+
+        # Patch 078 must hook playerIconButton in place of stock Material 3 IconButton
+        patch_078 = (ROOT / 'experimental-patches/078-square-player-glass-buttons.patch').read_text()
+        self.assertIn("Ldev/nino/squareglass/NativeGlass;->playerIconButton(", patch_078)
+        self.assertIn("Landroidx/compose/material3/IconButtonKt;->IconButton(", patch_078)
+
 if __name__ == '__main__':
     unittest.main()

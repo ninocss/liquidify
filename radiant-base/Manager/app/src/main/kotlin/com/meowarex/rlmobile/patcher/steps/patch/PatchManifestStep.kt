@@ -32,6 +32,9 @@ class PatchManifestStep(private val options: PatchOptions) : Step() {
         val pebbleDefault = container.getStep<SmaliPatchStep>().specs
             .firstOrNull { it.id == "PebbleIntegration" }?.defaultEnabled ?: false
         val enablePebbleIntegration = options.patchStates["PebbleIntegration"] ?: pebbleDefault
+        val maxVersionDefault = container.getStep<SmaliPatchStep>().specs
+            .firstOrNull { it.id == "PreventPlayStoreUpdates" }?.defaultEnabled ?: true
+        val enableMaxVersion = options.patchStates["PreventPlayStoreUpdates"] ?: maxVersionDefault
 
         val patchedManifest = ManifestPatcher.patchManifest(
             manifestBytes = manifest,
@@ -41,6 +44,7 @@ class PatchManifestStep(private val options: PatchOptions) : Step() {
             enableWazeIntegration = enableWazeIntegration,
             enablePebbleIntegration = enablePebbleIntegration,
             minimumSdk = container.getStep<SmaliPatchStep>().designMetadata?.compatibility?.minSdk,
+            setMaxVersion = enableMaxVersion,
         )
 
         container.log("Repacking apk with patched manifest")

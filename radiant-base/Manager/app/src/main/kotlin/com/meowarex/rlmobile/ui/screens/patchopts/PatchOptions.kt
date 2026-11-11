@@ -82,8 +82,9 @@ data class PatchOptions(
     }
 
     fun disabledPatchFiles(specs: List<PatchSpec>): Set<String> = buildSet {
+        val disabledByOther = specs.filter { isEnabled(it) }.flatMap { it.disables }.toSet()
         for (spec in specs) {
-            val enabled = isEnabled(spec)
+            val enabled = isEnabled(spec) && spec.id !in disabledByOther
             if (spec.variants.isEmpty()) {
                 if (!enabled) addAll(spec.fileNames)
             } else {
@@ -112,8 +113,9 @@ data class PatchOptions(
     }
 
     fun enabledExtensionFiles(specs: List<PatchSpec>): Set<String> = buildSet {
+        val disabledByOther = specs.filter { isEnabled(it) }.flatMap { it.disables }.toSet()
         for (spec in specs) {
-            if (!isEnabled(spec)) continue
+            if (!isEnabled(spec) || spec.id in disabledByOther) continue
             addAll(spec.extensionFiles)
             if (spec.variants.isNotEmpty()) {
                 spec.variants.getOrNull(variantIndex(spec))?.let { addAll(it.extensionFiles) }
@@ -125,8 +127,9 @@ data class PatchOptions(
     }
 
     fun smaliSubstitutions(specs: List<PatchSpec>): Map<String, String> = buildMap {
+        val disabledByOther = specs.filter { isEnabled(it) }.flatMap { it.disables }.toSet()
         for (spec in specs) {
-            if (!isEnabled(spec)) continue
+            if (!isEnabled(spec) || spec.id in disabledByOther) continue
             for (option in spec.advancedOptions) {
                 when (option) {
                     is OptionSpec.Toggle -> {

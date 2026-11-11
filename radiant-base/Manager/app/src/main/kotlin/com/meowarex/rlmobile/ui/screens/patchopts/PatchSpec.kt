@@ -58,7 +58,13 @@ data class PatchSpec(
         const val CATEGORY_INTEGRATION = "integration"
         const val SOURCE_LIQUIDIFY = "liquidify"
         const val SOURCE_RADIANT = "radiantLyrics"
-        private val LEGACY_LIQUIDIFY_IDS = setOf("SquareGlassCore", "SquareGlassTheme", "SquareGlassTypography")
+
+        private val LEGACY_LIQUIDIFY_IDS = setOf(
+            "SquareGlassCore", "SquareGlassTheme", "SquareGlassTypography",
+            "LiquidifyCore", "LiquidifyPalette", "LiquidifyHome", "LiquidifyPlayer",
+            "LiquidifyDetails", "LiquidifyMenus", "LiquidifyGestures", "LiquidifyLinn",
+            "LiquidifyTypography", "PreventPlayStoreUpdates",
+        )
 
         private val LEGACY_RADIANT_IDS = setOf(
             "EnableLegacyUi",
@@ -257,7 +263,7 @@ fun filterCompatiblePatchSpecs(specs: List<PatchSpec>): List<PatchSpec> {
                 patch.compatibleWith.any(liquidifyIds::contains))
         }
         .map { patch ->
-            if (patch.isRadiantLyricsPatch) patch.copy(defaultEnabled = false) else patch
+            if (patch.isRadiantLyricsPatch && patch.id != "PreventPlayStoreUpdates") patch.copy(defaultEnabled = false) else patch
         }
         .sortedBy { it.order }
     // A hidden dependency must never be silently enabled by an otherwise visible patch.

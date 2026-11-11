@@ -12,4 +12,6 @@ data class RLBuildInfo(
     val tidalApkUrl: String,
     @SerialName("patchesVersion")
     val patchesVersion: SemVer,
+    @SerialName("tidalSha256")
+    val tidalSha256: String? = null,
 )

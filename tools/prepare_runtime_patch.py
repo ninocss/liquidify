@@ -11,7 +11,7 @@ def activity(text):
 """ + needle)
 
 def settings(text):
-    needle = "    check-cast p1, Landroidx/compose/foundation/lazy/LazyListScope;"
+    needle = "    invoke-interface {p1, v2, v1, v3, v0}, Landroidx/compose/foundation/lazy/LazyListScope;->items(ILam0/l;Lam0/l;Lam0/q;)V"
     assert text.count(needle) == 1
     return text.replace(needle, needle + """
 

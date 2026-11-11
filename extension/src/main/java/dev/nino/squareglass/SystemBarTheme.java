@@ -13,6 +13,7 @@ public final class SystemBarTheme implements ViewTreeObserver.OnPreDrawListener,
     private final View decor;
     private final Window window;
     private boolean player;
+    private int lastBaseColor = 0;
     private SystemBarTheme(Window window) {
         this.window = window;
         decor = window.getDecorView();
@@ -35,10 +36,13 @@ public final class SystemBarTheme implements ViewTreeObserver.OnPreDrawListener,
                 controller.setSystemBarsAppearance(desired, mask);
             if (!player) {
                 int baseColor = SquarePalette.base(dark);
-                window.setBackgroundDrawable(new ColorDrawable(baseColor));
-                window.setStatusBarColor(baseColor);
-                window.setNavigationBarColor(baseColor);
-                decor.setBackgroundColor(baseColor);
+                if (lastBaseColor != baseColor) {
+                    lastBaseColor = baseColor;
+                    window.setBackgroundDrawable(new ColorDrawable(baseColor));
+                    window.setStatusBarColor(baseColor);
+                    window.setNavigationBarColor(baseColor);
+                    decor.setBackgroundColor(baseColor);
+                }
             }
         }
         return true;

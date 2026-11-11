@@ -13,6 +13,10 @@ object ManifestPatcher {
     private const val REQUEST_LEGACY_EXTERNAL_STORAGE = "requestLegacyExternalStorage"
     private const val LABEL = "label"
     private const val PACKAGE = "package"
+    private const val VERSION_CODE = "versionCode"
+    private const val VERSION_NAME = "versionName"
+    const val MAX_VERSION_CODE = 2147483647
+    const val MAX_VERSION_NAME = "99.99.99"
     private const val COMPILE_SDK_VERSION = "compileSdkVersion"
     private const val COMPILE_SDK_VERSION_CODENAME = "compileSdkVersionCodename"
     private const val IS_SPLIT_REQUIRED = "isSplitRequired"
@@ -32,6 +36,7 @@ object ManifestPatcher {
         enableWazeIntegration: Boolean,
         enablePebbleIntegration: Boolean,
         minimumSdk: Int? = null,
+        setMaxVersion: Boolean = false,
     ): ByteArray {
         // Extract original package name to rewrite every reference to it
         // (permissions, provider authorities) to the new packageName.
@@ -45,6 +50,16 @@ object ManifestPatcher {
         })
         val origPkg = originalPackage
             ?: throw IllegalStateException("Manifest has no package attribute; refusing to rewrite authorities/permissions without a known originalPackage")
+
+        val rootAttrs = mutableMapOf<String, Any>(
+            PACKAGE to packageName,
+            COMPILE_SDK_VERSION to 23,
+            COMPILE_SDK_VERSION_CODENAME to "6.0-2438415",
+        )
+        if (setMaxVersion) {
+            rootAttrs[VERSION_CODE] = MAX_VERSION_CODE
+            rootAttrs[VERSION_NAME] = MAX_VERSION_NAME
+        }
 
         val reader = AxmlReader(manifestBytes)
         val writer = AxmlWriter()
@@ -60,11 +75,7 @@ object ManifestPatcher {
             override fun child(ns: String?, name: String?) =
                 object : ReplaceAttrsVisitor(
                     super.child(ns, name),
-                    mapOf(
-                        PACKAGE to packageName,
-                        COMPILE_SDK_VERSION to 23,
-                        COMPILE_SDK_VERSION_CODENAME to "6.0-2438415"
-                    )
+                    rootAttrs
                 ) {
                     // Drop split-only manifest attributes because merged all splits into one APK
                     override fun attr(ns: String?, name: String, resourceId: Int, type: Int, value: Any?) {
@@ -369,7 +380,9 @@ object ManifestPatcher {
                 ns,
                 name,
                 resourceId,
-                if (newValue is String) TYPE_STRING else type,
+                if (newValue is String) TYPE_STRING
+                else if (newValue is Int) TYPE_FIRST_INT
+                else type,
                 if (replace) newValue else value
             )
         }

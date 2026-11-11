@@ -48,7 +48,13 @@ if args.theme_mode:
     if count != 1: raise SystemExit("Unexpected test theme ABI")
     settings.write_text(text, newline="\n")
 run(java_home / "bin/java.exe", "-cp", "build/dex-tools/*", "tools/DexTool.java", "assemble", combined, "research/probe-combined.dex")
-run(sys.executable, "tools/build_design_resources.py", "--theme-mode", "0")
+run(java_home / "bin/java.exe", "-cp", "build/dex-tools/*", "tools/DexTool.java", "index", "research/probe-combined.dex", "research/probe-combined-index.json")
+run(java_home / "bin/java.exe", "-cp", "build/dex-tools/*", "tools/DexTool.java", "refs", "research/probe-combined.dex", "research/probe-combined-refs.json")
+run(sys.executable, "tools/check_linkage.py", "--host", "research/host-index.json",
+    "--extension", "research/probe-combined-index.json", "--refs", "research/probe-combined-refs.json",
+    "--dex", "research/probe-combined.dex", "--report", "reports/probe-combined-linkage.json",
+    "--allow-duplicates")
+run(sys.executable, "tools/build_design_resources.py", "--theme-mode", str(args.theme_mode))
 with zipfile.ZipFile(ROOT / "research/tidal-stock-2.200.0.apk") as stock:
     (ROOT / "research/manifest-original.xml").write_bytes(stock.read("AndroidManifest.xml"))
 run(java_home / "bin/java.exe", "-cp", "build/dex-tools/*", "tools/ManifestTest.java", "research/manifest-original.xml", "research/manifest-test.xml")

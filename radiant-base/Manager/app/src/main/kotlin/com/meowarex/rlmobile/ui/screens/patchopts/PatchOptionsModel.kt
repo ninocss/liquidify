@@ -19,6 +19,7 @@ import com.meowarex.rlmobile.util.*
 import com.meowarex.rlmobile.manager.download.IDownloadManager
 import com.meowarex.rlmobile.manager.download.KtorDownloadManager
 import com.meowarex.rlmobile.network.services.RadiantLyricsGithubService
+import com.meowarex.rlmobile.network.utils.SemVer
 import com.meowarex.rlmobile.network.utils.getOrThrow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -332,26 +333,33 @@ class PatchOptionsModel(
      */
     private suspend fun loadLatestReleaseSpecs(): List<PatchSpec>? = try {
         val release = github.getLatestRelease().getOrThrow()
-        val url = release.assets
-            .find { it.name == RadiantLyricsGithubService.PATCHES_ASSET_NAME }
-            ?.browserDownloadUrl
-        if (url == null) {
-            Log.w(BuildConfig.TAG, "Latest release ${release.tagName} has no patches.zip asset; using built-in list")
+        val releaseSemver = SemVer.parseOrNull(release.tagName)
+        val bundledSemver = SemVer.parseOrNull(BuildConfig.VERSION_NAME)
+        if (releaseSemver != null && bundledSemver != null && releaseSemver < bundledSemver) {
+            Log.i(BuildConfig.TAG, "Bundled patches are newer than remote release ${release.tagName}; using built-in specs")
             null
         } else {
-            // Cached per release tag so re-opening the screen doesn't re-download the same zip.
-            val dest = paths.cacheDownloadDir.resolve("manifest-${release.tagName}.zip")
-                .apply { parentFile?.mkdirs() }
-            if (dest.exists() || downloader.download(url, dest) is IDownloadManager.Result.Success) {
-                loadManifestSpecs(dest).also { loaded ->
-                    if (loaded != null) {
-                        Log.i(BuildConfig.TAG, "Loaded ${loaded.size} patches from latest release ${release.tagName} manifest")
-                    } else {
-                        Log.w(BuildConfig.TAG, "Latest release ${release.tagName} ships no manifest.json; using built-in list")
-                    }
-                }
-            } else {
+            val url = release.assets
+                .find { it.name == RadiantLyricsGithubService.PATCHES_ASSET_NAME }
+                ?.browserDownloadUrl
+            if (url == null) {
+                Log.w(BuildConfig.TAG, "Latest release ${release.tagName} has no patches.zip asset; using built-in list")
                 null
+            } else {
+                // Cached per release tag so re-opening the screen doesn't re-download the same zip.
+                val dest = paths.cacheDownloadDir.resolve("manifest-${release.tagName}.zip")
+                    .apply { parentFile?.mkdirs() }
+                if (dest.exists() || downloader.download(url, dest) is IDownloadManager.Result.Success) {
+                    loadManifestSpecs(dest).also { loaded ->
+                        if (loaded != null) {
+                            Log.i(BuildConfig.TAG, "Loaded ${loaded.size} patches from latest release ${release.tagName} manifest")
+                        } else {
+                            Log.w(BuildConfig.TAG, "Latest release ${release.tagName} ships no manifest.json; using built-in list")
+                        }
+                    }
+                } else {
+                    null
+                }
             }
         }
     } catch (t: Throwable) {
@@ -359,12 +367,20 @@ class PatchOptionsModel(
         null
     }
 
-    private fun loadCachedReleaseManifestSpecs(): List<PatchSpec>? =
-        paths.cacheDownloadDir
+    private fun loadCachedReleaseManifestSpecs(): List<PatchSpec>? {
+        val cached = paths.cacheDownloadDir
             .listFiles { f -> f.name.startsWith("manifest-") && f.name.endsWith(".zip") }
-            ?.maxByOrNull { it.lastModified() }
-            ?.let { loadManifestSpecs(it) }
-            ?.also { Log.i(BuildConfig.TAG, "Loaded ${it.size} patches from cached release manifest (offline)") }
+            ?.maxByOrNull { it.lastModified() } ?: return null
+        val tag = cached.name.removePrefix("manifest-").removeSuffix(".zip")
+        val cachedSemver = SemVer.parseOrNull(tag)
+        val bundledSemver = SemVer.parseOrNull(BuildConfig.VERSION_NAME)
+        if (cachedSemver != null && bundledSemver != null && cachedSemver < bundledSemver) {
+            return null
+        }
+        return loadManifestSpecs(cached)?.also {
+            Log.i(BuildConfig.TAG, "Loaded ${it.size} patches from cached release manifest (offline)")
+        }
+    }
 
     /** Default (non-custom) source: latest release manifest → last cached manifest → built-in list. */
     private fun loadDefaultSpecs() = screenModelScope.launchIO {

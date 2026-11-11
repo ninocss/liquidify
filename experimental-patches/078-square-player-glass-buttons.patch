@@ -1,13 +1,11 @@
 --- a/com/tidal/android/feature/playerscreen/ui/composables/z2.smali
 +++ b/com/tidal/android/feature/playerscreen/ui/composables/z2.smali
-@@ -371,6 +371,10 @@
+@@ -371,7 +371,7 @@
      move-object v5, v15
  
      .line 153
-+    invoke-static {v2, v7, v9}, Ldev/nino/squareglass/NativeGlass;->playerButton(Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)Landroidx/compose/ui/Modifier;
-+
-+    move-result-object v2
-+
-     invoke-static/range {v1 .. v9}, Landroidx/compose/material3/IconButtonKt;->IconButton(Lam0/a;Landroidx/compose/ui/Modifier;ZLandroidx/compose/material3/IconButtonColors;Landroidx/compose/foundation/interaction/MutableInteractionSource;Lam0/p;Landroidx/compose/runtime/Composer;II)V
+-    invoke-static/range {v1 .. v9}, Landroidx/compose/material3/IconButtonKt;->IconButton(Lam0/a;Landroidx/compose/ui/Modifier;ZLandroidx/compose/material3/IconButtonColors;Landroidx/compose/foundation/interaction/MutableInteractionSource;Lam0/p;Landroidx/compose/runtime/Composer;II)V
++    invoke-static/range {v1 .. v9}, Ldev/nino/squareglass/NativeGlass;->playerIconButton(Lam0/a;Landroidx/compose/ui/Modifier;ZLandroidx/compose/material3/IconButtonColors;Landroidx/compose/foundation/interaction/MutableInteractionSource;Lam0/p;Landroidx/compose/runtime/Composer;II)V
  
      .line 154
+     .line 155

@@ -52,6 +52,7 @@ class ManagerApplication : Application() {
             modules(module {
                 singleOf(::HttpService)
                 singleOf(::RadiantLyricsGithubService)
+                singleOf(::ApkPureService)
             })
 
             // UI Models
@@ -80,6 +81,7 @@ class ManagerApplication : Application() {
 
                 singleOf(::AndroidDownloadManager)
                 singleOf(::KtorDownloadManager)
+                singleOf(::TidalApkSource)
             })
 
             // Installers

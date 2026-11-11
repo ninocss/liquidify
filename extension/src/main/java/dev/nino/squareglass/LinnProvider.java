@@ -149,7 +149,7 @@ public final class LinnProvider implements o,q {
         connecting=true;error="";
         int revision=++generation;
         candidate.generation=revision;
-        phase(Phase.CHECKING,"Gerät prüfen…");
+        phase(Phase.CHECKING,"Checking device…");
         io.execute(() -> {
             OpenHome.attempt.set(Integer.toString(revision));
             android.util.Log.i("SquareLinn","Queue transfer started");
@@ -165,7 +165,7 @@ public final class LinnProvider implements o,q {
                     for(l listener:listeners)listener.a(this);
                     candidate.start();
                     if(!candidate.ready && empty)candidate.restoreNativeQueue();
-                    phase(candidate.ready?Phase.READY:Phase.ACTIVE,candidate.ready?"Bereit – Musik auswählen":"");
+                    phase(candidate.ready?Phase.READY:Phase.ACTIVE,candidate.ready?"Ready – select music":"");
                 });
             } catch(Exception | LinkageError failure){android.util.Log.e("SquareLinn","Linn adapter connection failed: "+failure.getClass().getSimpleName());main.post(() -> {
                 if(revision!=generation)return;
@@ -210,7 +210,7 @@ public final class LinnProvider implements o,q {
     }
     static String explain(Throwable failure){
         String message=failure.getMessage();
-        if(failure.getSuppressed().length>0)message+=". Wiederherstellung nicht bestätigt; Gerätezustand vor erneutem Versuch prüfen.";
+        if(failure.getSuppressed().length>0)message+=". Recovery unconfirmed; verify device state before retrying.";
         return message;
     }
     public static Object override(Object proposed){

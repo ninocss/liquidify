@@ -8,6 +8,14 @@ def search_container(text):
     move-result-object v19
     invoke-static {}, Ldev/nino/squareglass/SearchChrome;->shape()Landroidx/compose/ui/graphics/Shape;
     move-result-object v16
+    move-object/from16 v13, v17
+    move-object/from16 v14, v20
+    const/4 v15, 0x0
+    invoke-static {v13, v14, v15}, Ldev/nino/squareglass/SearchChrome;->colors(Landroidx/compose/material3/TextFieldColors;Landroidx/compose/runtime/Composer;I)Landroidx/compose/material3/TextFieldColors;
+    move-result-object v17
+    const/4 v13, 0x0
+    const/4 v14, 0x0
+    const/4 v15, 0x0
     const v23, 0x38c0
 
 '''+marker)
@@ -87,6 +95,62 @@ def slider_thumb(text):
     return text.replace(marker,'''    const/4 v6, 0x0
     invoke-static {v0, v5, v6}, Ldev/nino/squareglass/SliderMotion;->nativeScale(FLandroidx/compose/runtime/Composer;I)Landroidx/compose/runtime/State;''')
 
+def search_results_padding(text):
+    marker='''    iget-object v1, p0, Lcom/tidal/android/feature/search/ui/composables/n0;->c:Landroidx/compose/foundation/lazy/LazyListState;
+
+    .line 105
+    .line 106
+    const/4 v2, 0x0'''
+    assert text.count(marker)==1
+    return text.replace(marker, '''    iget-object v1, p0, Lcom/tidal/android/feature/search/ui/composables/n0;->c:Landroidx/compose/foundation/lazy/LazyListState;
+
+    .line 105
+    .line 106
+    invoke-static {}, Ldev/nino/squareglass/SearchChrome;->bottomPadding()Landroidx/compose/foundation/layout/PaddingValues;
+
+    move-result-object v2''')
+
+def search_filter_row(text):
+    marker1 = '''    :goto_4
+    invoke-virtual {v12}, Lkotlin/Pair;->component1()Ljava/lang/Object;'''
+    assert text.count(marker1) == 1
+    text = text.replace(marker1, '''    :goto_4
+    iget-boolean v0, v4, Lpb0/a;->b:Z
+    invoke-static {v0}, Ldev/nino/squareglass/SearchChrome;->filterColors(Z)Lkotlin/Pair;
+    move-result-object v12
+    invoke-virtual {v12}, Lkotlin/Pair;->component1()Ljava/lang/Object;''')
+
+    marker2 = '''    :goto_8
+    invoke-interface {v2}, Landroidx/compose/runtime/Composer;->endReplaceGroup()V'''
+    assert text.count(marker2) == 1
+    text = text.replace(marker2, '''    :goto_8
+    invoke-interface {v2}, Landroidx/compose/runtime/Composer;->endReplaceGroup()V
+    iget-boolean v5, v4, Lpb0/a;->b:Z
+    invoke-static {v0, v5}, Ldev/nino/squareglass/SearchChrome;->filterChipModifier(Landroidx/compose/ui/Modifier;Z)Landroidx/compose/ui/Modifier;
+    move-result-object v0''')
+
+    marker3 = '''    move-object v4, v3
+
+    .line 183
+    move-object/from16 v3, v17
+
+    .line 184
+    .line 185
+    invoke-static/range {v4 .. v16}, Landroidx/compose/foundation/lazy/LazyDslKt;->LazyRow('''
+    assert text.count(marker3) == 1
+    text = text.replace(marker3, '''    invoke-static {}, Ldev/nino/squareglass/SearchChrome;->filterRowPadding()Landroidx/compose/foundation/layout/PaddingValues;
+    move-result-object v6
+
+    move-object v4, v3
+
+    .line 183
+    move-object/from16 v3, v17
+
+    .line 184
+    .line 185
+    invoke-static/range {v4 .. v16}, Landroidx/compose/foundation/lazy/LazyDslKt;->LazyRow(''')
+    return text
+
 if __name__=='__main__':
     save('com/tidal/android/feature/search/ui/composables/a0.smali','smali_classes12','150-square-search-input-container.patch',search_container)
     save('com/tidal/android/feature/search/ui/composables/c0.smali','smali_classes12','151-square-search-input-cursor.patch',search_cursor)
@@ -95,4 +159,6 @@ if __name__=='__main__':
     save('com/aspiro/wamp/mycollectionscreen/presentation/MyCollectionScreenKt.smali','smali_classes20','154-square-collection-settings-motion.patch',collection_settings,hooked=True)
     save('com/aspiro/wamp/widgets/SecondaryActionButton.smali','smali_classes21','155-square-native-favorite-motion.patch',legacy_favorite)
     save('com/tidal/android/feature/playerscreen/ui/composables/z4.smali','smali_classes10','156-square-slider-thumb-motion.patch',slider_thumb,hooked=True)
+    save('com/tidal/android/feature/search/ui/composables/n0.smali','smali_classes12','161-square-search-results-inset.patch',search_results_padding)
+    save('ob0/c0.smali','smali_classes12','162-square-search-filter-pills.patch',search_filter_row)
     print('Prepared native search input, confirmed favorite state and decorative settings icon motion')

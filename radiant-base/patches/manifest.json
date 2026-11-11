@@ -2,6 +2,19 @@
   "version": 1,
   "patches": [
     {
+      "id": "PreventPlayStoreUpdates",
+      "source": "radiantLyrics",
+      "order": 5,
+      "fileNames": [],
+      "title": "Prevent Play Store Updates",
+      "description": "Sets the APK's versionCode to 2147483647 (Integer.MAX_VALUE) and versionName to 99.99.99 in AndroidManifest.xml. This halts automatic and accidental Google Play Store updates that would overwrite your patched app.",
+      "default": true,
+      "category": "patch",
+      "compatibleWith": [
+        "LiquidifyCore"
+      ]
+    },
+    {
       "id": "EnableLegacyUi",
       "order": 10,
       "fileNames": [
@@ -24,7 +37,9 @@
         "LyricsReplaceLyricsButton",
         "LyricsReplaceShareButton",
         "LyricsKeepControlsVisible"
-      ]
+      ],
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "LyricsRlApi",
@@ -37,7 +52,7 @@
       "title": "Radiant Lyrics API - WIP",
       "description": "Use Radiant Lyrics API to fetch Lyrics (Syllable Level & Higher Quality)",
       "default": false,
-      "defaultVariantIndex": 0,
+      "defaultVariantIndex": 2,
       "variants": [
         {
           "title": "Line",
@@ -63,7 +78,9 @@
         "radiant/WordLyrics.smali",
         "radiant/WordLyricsTick.smali",
         "radiant/SylBrush.smali",
-        "radiant/SylLayout.smali"
+        "radiant/SylLayout.smali",
+        "radiant/StickyLyrics.smali",
+        "radiant/HomeBackdrop.smali"
       ],
       "advancedOptions": [
         {
@@ -111,7 +128,12 @@
           "requiresOption": "context_aware",
           "token": "RL_CTX"
         }
-      ]
+      ],
+      "compatibleWith": [
+        "LiquidifyCore"
+      ],
+      "category": "patch",
+      "source": "radiantLyrics"
     },
     {
       "id": "PlayerBackdrop",
@@ -119,7 +141,7 @@
       "fileNames": [],
       "title": "Player Backdrop",
       "description": "Swap the player backdrop for the Kawarp shader, or fine-tune TIDAL's own blurred cover",
-      "default": true,
+      "default": false,
       "defaultVariantIndex": 1,
       "variants": [
         {
@@ -138,7 +160,8 @@
           ],
           "extensionFiles": [
             "radiant/Kawarp.smali",
-            "dev/kawarp/KawarpEngine.smali"
+            "dev/kawarp/KawarpEngine.smali",
+            "radiant/HomeBackdrop.smali"
           ],
           "minSdk": 33
         }
@@ -385,9 +408,14 @@
             "home-backdrop.patch",
             "collection-backdrop.patch",
             "cover-capture.patch"
+          ],
+          "extensionFiles": [
+            "radiant/HomeBackdrop.smali"
           ]
         }
-      ]
+      ],
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "QualityBadgeColors",
@@ -395,9 +423,14 @@
       "fileNames": [
         "player-quality-badge-colors.patch"
       ],
+      "extensionFiles": [
+        "radiant/QualityBadge.smali"
+      ],
       "title": "Quality Badge Colors",
       "description": "Brings color back to the player quality badge.",
-      "default": true
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "PlayerMovePlayingFrom",
@@ -410,7 +443,9 @@
       ],
       "title": "Playing From",
       "description": "Shows the source name (playlist/album/mix) above the track title",
-      "default": true
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "PlayerOneHanded",
@@ -420,7 +455,9 @@
       ],
       "title": "One-Handed Mode",
       "description": "Mirrors the bottom player buttons left-to-right for easier one-handed reach.",
-      "default": false
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "SwipeToQueue",
@@ -556,7 +593,9 @@
           "default": -14408663,
           "token": "RL_SWIPE_TO_QUEUE_ADD_TO_PLAYLIST_COLOR"
         }
-      ]
+      ],
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "LyricsProgressPill",
@@ -565,14 +604,20 @@
         "lyrics-progress-pill.patch",
         "lyrics-fade-region.patch"
       ],
+      "extensionFiles": [
+        "radiant/NoOp.smali",
+        "radiant/SpvFactory.smali"
+      ],
       "title": "Lyrics Progress Pill",
       "description": "Restores the old Track Progress Pill in the top of the Lyrics screen!",
-      "default": true,
+      "default": false,
       "requires": [
         "LyricsDisableCover",
         "LyricsReplaceLyricsButton",
         "LyricsReplaceShareButton"
-      ]
+      ],
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "LyricsDisableCover",
@@ -582,7 +627,9 @@
       ],
       "title": "Disable Lyrics Cover",
       "description": "Removes the mini track cover from the lyrics screen.",
-      "default": true
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "LyricsReplaceLyricsButton",
@@ -591,9 +638,15 @@
         "lyrics-replace-lyrics-button.patch",
         "lyrics-sparkle-conditional-visibility.patch"
       ],
+      "extensionFiles": [
+        "radiant/SparkleButton.smali",
+        "radiant/SparkleContent.smali"
+      ],
       "title": "Replace Lyrics Button",
       "description": "Replaces the Lyrics button with the RL Sparkle!",
-      "default": true
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "LyricsReplaceShareButton",
@@ -603,7 +656,9 @@
       ],
       "title": "Replace Share Button",
       "description": "Replaces the share button with the Tidal Connect button from the top of the screen. (it's in the menu already)",
-      "default": true
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "MiniPlayerRedesign",
@@ -622,12 +677,20 @@
           "title": "Grey",
           "fileNames": [
             "mini-player-grey.patch"
+          ],
+          "extensionFiles": [
+            "radiant/MiniSeekerLine.smali",
+            "radiant/SeekerConsumer.smali"
           ]
         },
         {
           "title": "Black",
           "fileNames": [
             "mini-player-black.patch"
+          ],
+          "extensionFiles": [
+            "radiant/MiniSeekerLine.smali",
+            "radiant/SeekerConsumer.smali"
           ]
         }
       ],
@@ -723,7 +786,9 @@
             "com/tidal/android/feature/appscaffold/ui/r$c.smali"
           ]
         }
-      ]
+      ],
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "LyricsKeepControlsVisible",
@@ -736,12 +801,14 @@
       ],
       "title": "Keep Controls Visible",
       "description": "Inverts the auto-hide behavior on the lyrics screen, playback controls stay visible by default and only hide when you tap them off. Also stops the open lyrics view from randomly closing when the player re-fetches the same track.",
-      "default": true
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "WazeIntegration",
       "order": 90,
-      "category": "integration",
+      "category": "patch",
       "pathLocked": true,
       "fileNames": [
         "integration-waze-playback.patch"
@@ -752,7 +819,7 @@
       ],
       "title": "Waze Integration",
       "description": "Control TIDAL playback from the Waze app",
-      "default": true,
+      "default": false,
       "advancedOptions": [
         {
           "type": "choice",
@@ -778,12 +845,13 @@
           "default": -16747037,
           "token": "RL_WAZE_THEME_COLOR"
         }
-      ]
+      ],
+      "source": "radiantLyrics"
     },
     {
       "id": "PebbleIntegration",
       "order": 91,
-      "category": "integration",
+      "category": "patch",
       "fileNames": [
         "integration-pebble-playback.patch",
         "integration-pebble-lyrics.patch"
@@ -802,7 +870,8 @@
       "companionApp": {
         "storeId": "02b779dcf9084fecb0375df1",
         "storeSource": "https://appstore-api.repebble.com/api"
-      }
+      },
+      "source": "radiantLyrics"
     },
     {
       "id": "DebugMenuUnlock",
@@ -812,7 +881,12 @@
       ],
       "title": "Unlock Debug Menu",
       "description": "Reveals TIDAL's hidden Debug Menu in Settings. (Unlocks Feature Flags & the legacy Debug Options)",
-      "default": false
+      "default": false,
+      "compatibleWith": [
+        "LiquidifyCore"
+      ],
+      "category": "patch",
+      "source": "radiantLyrics"
     }
   ]
 }

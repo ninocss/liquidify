@@ -1,5 +1,14 @@
 --- a/com/tidal/android/feature/appscaffold/ui/composable/MiniPlayerKt.smali
 +++ b/com/tidal/android/feature/appscaffold/ui/composable/MiniPlayerKt.smali
+@@ -1371,7 +1371,7 @@
+ 
+     move-result v7
+ 
+-    invoke-static {v7}, Landroidx/compose/foundation/shape/RoundedCornerShapeKt;->RoundedCornerShape-0680j_4(F)Landroidx/compose/foundation/shape/RoundedCornerShape;
++    invoke-static {v7}, Ldev/nino/squareglass/SquareShapes;->artwork(F)Landroidx/compose/foundation/shape/RoundedCornerShape;
+ 
+     move-result-object v7
+ 
 @@ -1638,6 +1638,10 @@
      const/16 v31, 0x0
  

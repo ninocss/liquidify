@@ -223,6 +223,14 @@ def legacy_track_row(text):
     return text[:start] + body + text[end:]
 
 
+def upload_page(text):
+    needle = "    check-cast p1, Landroidx/compose/ui/platform/ComposeView;"
+    assert text.count(needle) == 1
+    return text.replace(needle, needle + """
+
+    invoke-static {p1}, Ldev/nino/squareglass/SquareScreens;->upload(Landroid/view/View;)V""")
+
+
 if __name__ == "__main__":
     save("i4/a.smali", "smali", "090-square-context-menu-presentation.patch", menu_presenter)
     save("y40/c.smali", "smali_classes3", "091-square-context-menu-dismiss.patch", menu_dismiss)
@@ -240,4 +248,5 @@ if __name__ == "__main__":
     save("t6/q.smali", "smali_classes19", "103-square-track-artwork.patch", track_row)
     save("v6/e.smali", "smali_classes19", "104-square-collection-track-artwork.patch", collection_track_row)
     save("n8/d.smali", "smali_classes19", "105-square-legacy-track-artwork.patch", legacy_track_row)
+    save("com/aspiro/wamp/features/upload/uploads/UploadTabsFragment.smali", "smali_classes20", "144-square-upload-padding.patch", upload_page)
     print("Prepared native contextual menus, settings cards and page arrival")

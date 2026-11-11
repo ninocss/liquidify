@@ -1,13 +1,13 @@
 --- a/com/aspiro/wamp/settings/compose/n0.smali
 +++ b/com/aspiro/wamp/settings/compose/n0.smali
-@@ -33,6 +33,10 @@
+@@ -100,6 +100,10 @@
+     .line 35
+     invoke-interface {p1, v2, v1, v3, v0}, Landroidx/compose/foundation/lazy/LazyListScope;->items(ILam0/l;Lam0/l;Lam0/q;)V
  
-     .line 1
-     check-cast p1, Landroidx/compose/foundation/lazy/LazyListScope;
-+
 +    iget-object v0, p0, Lcom/aspiro/wamp/settings/compose/n0;->a:Ljava/util/List;
 +
 +    invoke-static {p1, v0}, Ldev/nino/squareglass/DesignEntry;->append(Landroidx/compose/foundation/lazy/LazyListScope;Ljava/util/List;)V
- 
-     .line 2
-     .line 3
++
+     .line 36
+     .line 37
+     .line 38

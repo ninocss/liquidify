@@ -5,43 +5,33 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.Navigator
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 // TODO: migrate to androidx-nav v3 since it has built-in screen result support
 /**
  * Global result registry for managing screen results across the app.
- * This is a hacky workaround for the lack of a proper screen result system in Voyager navigation.
- * https://github.com/adrielcafe/voyager/issues/465#issuecomment-2696523168
+ * Uses ConcurrentHashMap for synchronous result delivery so that screen dismissals/disposals
+ * complete their deferred listeners reliably without depending on a coroutine scope.
  */
-private object ScreenResultRegistry {
-    private val mutex = Mutex()
-    private val results = HashMap<String, CompletableDeferred<Any?>>()
+internal object ScreenResultRegistry {
+    private val results = ConcurrentHashMap<String, CompletableDeferred<Any?>>()
 
-    suspend fun <R> registerResult(key: String): CompletableDeferred<R> {
+    fun <R> registerResult(key: String): CompletableDeferred<R> {
         val deferred = CompletableDeferred<Any?>()
-        mutex.withLock {
-            results[key] = deferred
-        }
+        results[key] = deferred
         @Suppress("UNCHECKED_CAST")
         return deferred as CompletableDeferred<R>
     }
 
-    suspend fun setResult(key: String, result: Any?) {
-        mutex.withLock {
-            results[key]?.complete(result)
-            results.remove(key)
-        }
+    fun setResult(key: String, result: Any?) {
+        results.remove(key)?.complete(result)
     }
 
-    suspend fun clear(key: String) {
-        mutex.withLock {
-            results[key]?.cancel()
-            results.remove(key)
-        }
+    fun clear(key: String) {
+        results.remove(key)?.cancel()
     }
 }
 
@@ -54,7 +44,7 @@ abstract class ScreenWithResult<R> : Screen {
     /**
      * This sets the result for this screen and completes any listeners.
      */
-    protected suspend fun setResult(value: R) {
+    fun setResult(value: R) {
         ScreenResultRegistry.setResult(resultKey.key, value)
     }
 }
@@ -67,9 +57,9 @@ abstract class ScreenModelWithResult<R>(
 ) : ScreenModel {
     /**
      * This sets the result for this screen and completes any listeners.
-     * Preferably, this should be called in [ScreenModel.onDispose]
+     * Can be safely called synchronously in [ScreenModel.onDispose] or custom confirm actions.
      */
-    protected suspend fun setResult(value: R) {
+    fun setResult(value: R) {
         ScreenResultRegistry.setResult(resultKey.key, value)
     }
 }
@@ -96,7 +86,7 @@ suspend fun <R> Navigator.pushForResult(
 /**
  * Extension function to show a screen without waiting for the result
  */
-suspend fun <R> Navigator.showWithoutWaiting(
+fun <R> Navigator.showWithoutWaiting(
     screen: ScreenWithResult<R>,
 ): ScreenResultKey {
     ScreenResultRegistry.registerResult<R>(screen.resultKey.key)

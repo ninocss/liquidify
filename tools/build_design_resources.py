@@ -71,7 +71,7 @@ def main():
                 continue
             weight = 900 if "black" in name else 600 if "semi_bold" in name or "demi_bold" in name else 700 if "bold" in name else 500 if "medium" in name else 400
             files.append(dict(target=name, source=f"fonts/squareglass_{weight}.ttf", originalSha256=sha(apk.read(name)), sha256=sha((work / f"squareglass_{weight}.ttf").read_bytes())))
-    design = dict(patchId="LiquidifyTheme", palette=palette, fontsPatchId="LiquidifyTypography", fonts=files, themeXml=xml_specs)
+    design = dict(patchId="LiquidifyPalette", palette=palette, fontsPatchId="LiquidifyTypography", fonts=files, themeXml=xml_specs)
     (ROOT / "research/design-resources.json").write_text(json.dumps(design, indent=2) + "\n")
     (ROOT / "reports/design-resources-build.json").write_text(json.dumps(dict(fontRecipe=1, themeMode=args.theme_mode, sourceFontSha256=font_sha, colors=len(palette), fontResources=len(files), outputArscSha256=sha((ROOT / "research/square-resources.arsc").read_bytes())), indent=2) + "\n")
     print(f"Built {len(palette)} palette instructions and {len(files)} font replacements")

@@ -6,6 +6,7 @@ import android.provider.OpenableColumns
 import android.util.Log
 import androidx.compose.runtime.*
 import cafe.adriel.voyager.core.model.screenModelScope
+import cafe.adriel.voyager.navigator.Navigator
 import com.meowarex.rlmobile.BuildConfig
 import com.meowarex.rlmobile.R
 import com.meowarex.rlmobile.manager.PathManager
@@ -225,8 +226,13 @@ class ComponentOptionsModel(
         PatchComponent.Type.Patches -> "patches.zip"
     }
 
+    fun confirm(navigator: Navigator) {
+        setResult(selected)
+        navigator.back(null)
+    }
+
     override fun onDispose() {
-        screenModelScope.launch { setResult(selected) }
+        setResult(selected)
     }
 
     sealed interface ReleasesState {

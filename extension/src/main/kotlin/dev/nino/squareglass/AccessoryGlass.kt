@@ -33,8 +33,7 @@ object AccessoryGlass {
         // The first composition can precede the native page's first recording.
         // Draw a readable capsule immediately, then repaint both accessories
         // when that recording becomes available, even on an otherwise idle page.
-        val film = if (navigation) Color.White.copy(alpha = if (native != null && !hasSample) 1f else Math.max(.50f, SquareSettings.opacity()))
-            else if (native != null && !hasSample) Color(SquarePalette.surface(dark))
+        val film = if (navigation) Color.White.copy(alpha = Math.max(.50f, SquareSettings.opacity()))
             else (if (dark) Color(0xFF33343A) else Color.White).copy(alpha = SquareSettings.readableOpacity(dark))
         return original.drawBackdrop(backdrop = backdrop, shape = { shape }, effects = {
             vibrancy()

@@ -1,0 +1,11 @@
+--- a/com/aspiro/wamp/features/upload/uploads/UploadTabsFragment.smali
++++ b/com/aspiro/wamp/features/upload/uploads/UploadTabsFragment.smali
+@@ -316,6 +316,8 @@
+     .line 4
+     check-cast p1, Landroidx/compose/ui/platform/ComposeView;
+ 
++    invoke-static {p1}, Ldev/nino/squareglass/SquareScreens;->upload(Landroid/view/View;)V
++
+     .line 5
+     .line 6
+     new-instance p2, Lb8/a;

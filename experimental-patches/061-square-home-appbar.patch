@@ -18,7 +18,25 @@
  
      .line 128
      .line 129
-@@ -871,7 +871,7 @@
+@@ -851,16 +851,7 @@
+     move-result-wide v14
+ 
+     .line 135
+-    sget-object v3, Landroidx/compose/ui/graphics/Color;->Companion:Landroidx/compose/ui/graphics/Color$Companion;
+-
+-    .line 136
+-    .line 137
+-    invoke-virtual {v3}, Landroidx/compose/ui/graphics/Color$Companion;->getTransparent-0d7_KjU()J
+-
+-    .line 138
+-    .line 139
+-    .line 140
+-    move-result-wide v16
++    move-wide/from16 v16, v14
+ 
+     .line 141
+     invoke-virtual {v0}, Lcom/squareup/ui/market/core/theme/MarketStylesheet;->getColors()Lcom/squareup/ui/market/core/theme/MarketStylesheet$c;
+@@ -871,7 +862,7 @@
      move-result-object v3
  
      .line 145

@@ -26,6 +26,7 @@ import com.meowarex.rlmobile.network.models.GithubCommit
 import com.meowarex.rlmobile.network.models.RLBuildInfo
 import com.meowarex.rlmobile.network.services.RadiantLyricsGithubService
 import com.meowarex.rlmobile.network.utils.CommitsPagingSource
+import com.meowarex.rlmobile.network.utils.SemVer
 import com.meowarex.rlmobile.network.utils.fold
 import com.meowarex.rlmobile.patcher.InstallMetadata
 import com.meowarex.rlmobile.ui.screens.patchopts.PatchOptions
@@ -309,6 +310,16 @@ class HomeModel(
     }
 
     private suspend fun fetchRemoteData(force: Boolean = false) {
+        val bundled = try {
+            application.assets.open("liquidify/data.json").bufferedReader().use {
+                json.decodeFromString<com.meowarex.rlmobile.network.models.RLBuildInfo>(it.readText())
+            }
+        } catch (_: Throwable) { null }
+
+        if (bundled != null && remoteDataJson == null) {
+            remoteDataJson = bundled
+        }
+
         val release = try {
             github.getLatestRelease(force).fold(
                 success = { it },
@@ -316,6 +327,13 @@ class HomeModel(
             )
         } catch (t: Throwable) {
             Log.w(BuildConfig.TAG, "Failed to fetch remote data", t)
+            return
+        }
+
+        val bundledVer = bundled?.patchesVersion
+        val remoteVer = SemVer.parseOrNull(release.tagName)
+        if (bundledVer != null && remoteVer != null && remoteVer <= bundledVer) {
+            remoteDataJson = bundled
             return
         }
 

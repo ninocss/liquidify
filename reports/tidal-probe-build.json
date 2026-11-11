@@ -2,7 +2,7 @@
   "package": "com.aspiro.tidal",
   "kind": "local integration test",
   "themeMode": 0,
-  "sha256": "55f333092d6c3d3752a2c53f3d92091d7f0bb58aa882cf5407b458a80ae134ae",
+  "sha256": "f38493ddd598bf3ba8fecbe706fb7199b215daf9363e5fa5105c43f60f3f130c",
   "signatureVerified": true,
   "zipAlignmentVerified": true
 }

@@ -26,6 +26,10 @@ class DesignResourcesStep(private val options: PatchOptions) : Step() {
         val apk = container.getStep<CopyDependenciesStep>().apk
         val patchZip = container.getStep<DownloadPatchesStep>().getStoredFile(container)
         val replacements = linkedMapOf<String, ByteArray>()
+        val paletteSpec = smali.specs.firstOrNull { it.id == design.patchId }
+        if (paletteSpec == null) {
+            container.log("Warning: Design resources patchId '${design.patchId}' not found in patch specs")
+        }
         if (enabled(design.patchId)) {
             val modeText = options.smaliSubstitutions(smali.specs)["__RL_SQUARE_THEME_MODE__"] ?: "0x0"
             val mode = if (smali.designMetadata?.compatibility?.capabilities?.contains("squareRuntimeThemeV1") == true) 0
@@ -51,6 +55,12 @@ class DesignResourcesStep(private val options: PatchOptions) : Step() {
                 }
             }
             container.log("Applied ${design.themeXml.size} fingerprinted native theme XML rules")
+        } else {
+            container.log("Design palette resources skipped: patch '${design.patchId}' is disabled (spec present: ${paletteSpec != null})")
+        }
+        val fontsSpec = smali.specs.firstOrNull { it.id == design.fontsPatchId }
+        if (fontsSpec == null) {
+            container.log("Warning: Design resources fontsPatchId '${design.fontsPatchId}' not found in patch specs")
         }
         if (enabled(design.fontsPatchId)) {
             ZipReader(apk).use { base ->

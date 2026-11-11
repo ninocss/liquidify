@@ -37,10 +37,10 @@ object NativeTabs {
     @Composable
     fun Render(selected: Int, items: List<NativeTab>, onItem: (NativeTab) -> Unit, modifier: Modifier) {
         if (items.isEmpty()) return
-        // Navigation uses a light glass film in both themes; native artwork
-        // remains visible underneath while glyphs stay solid black.
-        val ink = Color(SquarePalette.ink(false))
-        val iconInk = Color.Black
+        // Navigation theme adapts to active dark mode and settings.
+        val dark = NativeGlass.dark
+        val ink = Color(SquarePalette.ink(dark))
+        val iconInk = if (dark) Color.White else Color.Black
         val here = rememberUpdatedState(selected)
         val readHere = remember { { here.value } }
         val currentItems = rememberUpdatedState(items)

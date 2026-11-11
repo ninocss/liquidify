@@ -14,6 +14,9 @@ dist/
 .kotlin/
 .idea/
 .codex-remote-attachments/
+.codex-attachments/
+.superpowers/
+upstream_LiquidBottomTabs.kt
 release-assets/
 **/.cxx/
 **/local.properties
