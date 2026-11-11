@@ -1,0 +1,32 @@
+--- a/ob0/c0.smali
++++ b/ob0/c0.smali
+@@ -349,6 +349,9 @@
+     .line 155
+     .line 156
+     :goto_4
++    iget-boolean v0, v4, Lpb0/a;->b:Z
++    invoke-static {v0}, Ldev/nino/squareglass/SearchChrome;->filterColors(Z)Lkotlin/Pair;
++    move-result-object v12
+     invoke-virtual {v12}, Lkotlin/Pair;->component1()Ljava/lang/Object;
+ 
+     .line 157
+@@ -673,6 +676,9 @@
+     .line 312
+     :goto_8
+     invoke-interface {v2}, Landroidx/compose/runtime/Composer;->endReplaceGroup()V
++    iget-boolean v5, v4, Lpb0/a;->b:Z
++    invoke-static {v0, v5}, Ldev/nino/squareglass/SearchChrome;->filterChipModifier(Landroidx/compose/ui/Modifier;Z)Landroidx/compose/ui/Modifier;
++    move-result-object v0
+ 
+     .line 313
+     .line 314
+@@ -1585,6 +1591,9 @@
+ 
+     .line 181
+     .line 182
++    invoke-static {}, Ldev/nino/squareglass/SearchChrome;->filterRowPadding()Landroidx/compose/foundation/layout/PaddingValues;
++    move-result-object v6
++
+     move-object v4, v3
+ 
+     .line 183

@@ -1,0 +1,13 @@
+--- a/com/tidal/android/feature/search/ui/composables/n0.smali
++++ b/com/tidal/android/feature/search/ui/composables/n0.smali
+@@ -268,7 +268,9 @@
+ 
+     .line 105
+     .line 106
+-    const/4 v2, 0x0
++    invoke-static {}, Ldev/nino/squareglass/SearchChrome;->bottomPadding()Landroidx/compose/foundation/layout/PaddingValues;
++
++    move-result-object v2
+ 
+     .line 107
+     const/4 v3, 0x0

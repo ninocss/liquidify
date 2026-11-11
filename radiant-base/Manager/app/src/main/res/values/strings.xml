@@ -264,6 +264,7 @@
   <string name="patchopts_bypass_incompatible_desc">Force-allow path-gated patches. This can be VERY DANGEROUS!</string>
   <string name="patchopts_divider_basic">Basic</string>
   <string name="patchopts_divider_advanced">Advanced</string>
+
   <string name="patchopts_patches_title">Patches</string>
   <string name="patchopts_patches_desc">Toggle which patches are applied during installation. Unchecked patches are skipped entirely.</string>
   <string name="patchopts_patches_summary">%1$d of %2$d enabled</string>
@@ -277,6 +278,9 @@
   <string name="patchopts_toggle_snap">Toggle snapping to steps</string>
   <string name="patchopts_field_unlock">Unlock editing</string>
   <string name="patchopts_field_lock">Lock and reset to default</string>
+
+  <string name="patch_prevent_updates_title">Prevent Play Store Updates</string>
+  <string name="patch_prevent_updates_desc">Sets the APK versionCode to 2147483647 (Integer.MAX_VALUE) and versionName to 99.99.99 to prevent Google Play Store from overriding or prompting updates for the patched app.</string>
 
   <string name="patch_lyrics_disable_cover_title">Disable Lyrics Cover</string>
   <string name="patch_lyrics_disable_cover_desc">Removes the mini track cover from the lyrics screen.</string>

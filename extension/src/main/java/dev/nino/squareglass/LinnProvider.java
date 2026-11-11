@@ -214,7 +214,7 @@ public final class LinnProvider implements o,q {
         candidate.generation=revision;
         pendingPlayer=candidate;
         attemptExpires=System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(empty?12000:Math.min(120000,20000L+candidate.tracks.size()*150L));
-        phase(Phase.CHECKING,"Gerät prüfen…");
+        phase(Phase.CHECKING,"Checking device…");
         controls.execute(() -> {
             OpenHome.attempt.set(Integer.toString(revision));
             OpenHome.deadline.set(attemptExpires);
@@ -234,7 +234,7 @@ public final class LinnProvider implements o,q {
                     for(l listener:listeners)listener.a(this);
                     if(!candidate.ready && empty)candidate.restoreNativeQueue();
                     candidate.start();
-                    phase(candidate.ready?Phase.READY:Phase.ACTIVE,candidate.ready?"Bereit – Musik auswählen":"");
+                    phase(candidate.ready?Phase.READY:Phase.ACTIVE,candidate.ready?"Ready – select music":"");
                 });
             } catch(Exception | LinkageError failure){android.util.Log.e("SquareLinn","Linn adapter connection failed: "+failure.getClass().getSimpleName());main.post(() -> {
                 if(revision!=generation)return;
@@ -324,7 +324,7 @@ public final class LinnProvider implements o,q {
     }
     static String explain(Throwable failure){
         String message=failure.getMessage();
-        if(failure.getSuppressed().length>0)message+=". Wiederherstellung nicht bestätigt; Gerätezustand vor erneutem Versuch prüfen.";
+        if(failure.getSuppressed().length>0)message+=". Recovery unconfirmed; verify device state before retrying.";
         return message;
     }
     public static Object override(Object proposed){

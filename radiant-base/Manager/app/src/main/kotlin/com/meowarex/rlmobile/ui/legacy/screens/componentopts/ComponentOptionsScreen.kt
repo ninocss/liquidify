@@ -4,6 +4,7 @@ import com.meowarex.rlmobile.ui.screens.componentopts.*
 
 import android.net.Uri
 import android.os.Parcelable
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -64,6 +65,10 @@ class ComponentOptionsScreen(
             }
         }
 
+        BackHandler {
+            model.confirm(navigator)
+        }
+
         ComponentOptionsScreenContent(
             componentType = componentType,
             components = model.components.toImmutableList(),
@@ -76,7 +81,7 @@ class ComponentOptionsScreen(
             onToggleReleases = { model.toggleReleasesExpanded(componentType) },
             onImportRelease = { release -> model.importFromRelease(release, componentType) },
             importingReleaseTag = model.importingReleaseTag,
-            onBackPressed = { navigator.back(null) },
+            onBackPressed = { model.confirm(navigator) },
         )
     }
 }

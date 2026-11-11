@@ -1,8 +1,7 @@
 """Validate the exact prepared Liquidify payload before publishing it."""
 from pathlib import Path
-import hashlib,json,zipfile
+import hashlib,json,zipfile,re
 import xml.etree.ElementTree as ET
-from upstream_compatibility import restore_specs
 ROOT=Path(__file__).resolve().parents[1]
 def validate():
     release=json.loads((ROOT/'release.json').read_text())
@@ -20,11 +19,18 @@ def validate():
             assert hashlib.sha256(z.read(name)).hexdigest()==digest,name
         manifest=json.loads(z.read('manifest.json'))
         assert manifest==json.loads((ROOT/'patches/manifest.json').read_text())
+        design_res=manifest.get('designResources',{})
+        all_ids={p['id'] for p in manifest['patches']}
+        if 'patchId' in design_res:
+            assert design_res['patchId'] in all_ids, f"designResources.patchId '{design_res['patchId']}' not found in manifest patches"
+        if 'fontsPatchId' in design_res:
+            assert design_res['fontsPatchId'] in all_ids, f"designResources.fontsPatchId '{design_res['fontsPatchId']}' not found in manifest patches"
         own=[p for p in manifest['patches'] if p.get('source')=='liquidify']
-        assert {p['id'] for p in own}=={'LiquidifyCore','LiquidifyTheme','LiquidifyTypography'}
+        expected_ids={'LiquidifyCore','LiquidifyPalette','LiquidifyHome','LiquidifyPlayer','LiquidifyDetails','LiquidifyMenus','LiquidifyGestures','LiquidifyLinn','LiquidifyTypography'}
+        assert {p['id'] for p in own}==expected_ids
         assert all(p['title'].startswith('Liquidify') and p['default'] for p in own)
         upstream=json.loads((ROOT/'radiant-base/patches/manifest.json').read_text())['patches']
-        assert [p for p in manifest['patches'] if p.get('source')!='liquidify']==restore_specs(upstream)
+        assert [p for p in manifest['patches'] if p.get('source')!='liquidify']==upstream
         for original in (ROOT/'radiant-base/patches').rglob('*'):
             if original.is_file() and original.name!='manifest.json':
                 name=original.relative_to(ROOT/'radiant-base/patches').as_posix()
@@ -39,6 +45,32 @@ def validate():
         for patch in own:
             assert all(f in names for f in patch.get('fileNames',[]))
             assert all('extension/'+f in names for f in patch.get('extensionFiles',[]))
+
+        # Validate that internal extension references within patches are declared
+        ext_classes = {}
+        for fn in [n for n in names if n.startswith('extension/') and n.endswith('.smali')]:
+            for line in z.read(fn).decode('utf-8', errors='ignore').splitlines():
+                if line.startswith('.class '):
+                    m = re.search(r'L([^;]+);', line)
+                    if m:
+                        ext_classes[m.group(1)] = fn[len('extension/'):]
+        for p in manifest['patches']:
+            p_files = set(p.get('extensionFiles', []))
+            for v in p.get('variants', []):
+                p_files.update(v.get('extensionFiles', []))
+            for opt in p.get('advancedOptions', []):
+                p_files.update(opt.get('extensionFiles', []))
+            for rel in p_files:
+                fn = 'extension/' + rel
+                if fn in names:
+                    refs = set(re.findall(r'L(radiant/[^;$\s]+|dev/[^;$\s]+);', z.read(fn).decode('utf-8', errors='ignore')))
+                    for r in refs:
+                        if r in ext_classes:
+                            target = ext_classes[r]
+                            base_rel = rel.replace('.smali', '')
+                            base_target = target.replace('.smali', '')
+                            if target not in p_files and not base_target.startswith(base_rel + '$') and target != rel:
+                                raise AssertionError(f"Patch [{p['id']}] file {rel} requires {target} which is not declared in {p['id']}")
     report=json.loads((ROOT/'reports/package-alpha.json').read_text())
     assert hashlib.sha256(archive.read_bytes()).hexdigest()==report['sha256']
     gradle=(ROOT/'radiant-base/Manager/app/build.gradle.kts').read_text()

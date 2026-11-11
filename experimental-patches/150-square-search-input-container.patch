@@ -1,6 +1,6 @@
 --- a/com/tidal/android/feature/search/ui/composables/a0.smali
 +++ b/com/tidal/android/feature/search/ui/composables/a0.smali
-@@ -447,6 +447,12 @@
+@@ -447,6 +447,20 @@
      .line 187
      .line 188
      const/4 v4, 0x1
@@ -9,6 +9,14 @@
 +    move-result-object v19
 +    invoke-static {}, Ldev/nino/squareglass/SearchChrome;->shape()Landroidx/compose/ui/graphics/Shape;
 +    move-result-object v16
++    move-object/from16 v13, v17
++    move-object/from16 v14, v20
++    const/4 v15, 0x0
++    invoke-static {v13, v14, v15}, Ldev/nino/squareglass/SearchChrome;->colors(Landroidx/compose/material3/TextFieldColors;Landroidx/compose/runtime/Composer;I)Landroidx/compose/material3/TextFieldColors;
++    move-result-object v17
++    const/4 v13, 0x0
++    const/4 v14, 0x0
++    const/4 v15, 0x0
 +    const v23, 0x38c0
  
      .line 189

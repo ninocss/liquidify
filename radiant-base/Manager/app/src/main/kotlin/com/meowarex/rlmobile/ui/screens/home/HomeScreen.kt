@@ -200,13 +200,12 @@ private fun ColumnScope.HomeContent(
         onInfo = onInfo,
     )
 
-    val blockedByManagerUpdate = managerUpdateAvailable && (patchesBehind || tidalBehind)
+    val blockedByManagerUpdate = false
     val canLocalRepatch = install != null && state.offlineRepatchReady
     val onlineEnabled = state.latestTidalVersionCode != null || install != null
-    val buttonEnabled = !blockedByManagerUpdate && (if (state.offline) canLocalRepatch else onlineEnabled)
+    val buttonEnabled = if (state.offline) canLocalRepatch else onlineEnabled
 
     val label = when {
-        blockedByManagerUpdate -> "Manager Update Required"
         state.offline && install != null -> "Local Repatch"
         state.offline -> "No Network"
         install == null && state.latestTidalVersionCode == null -> "Loading…"

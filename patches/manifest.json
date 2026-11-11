@@ -4,13 +4,20 @@
     {
       "id": "LiquidifyCore",
       "source": "liquidify",
-      "order": -30,
+      "category": "patch",
+      "order": -50,
       "fileNames": [
         "000-square-glass-host.patch",
         "010-square-glass-native-tabs.patch",
         "020-square-glass-native-backdrop.patch",
         "030-square-glass-native-shell.patch",
-        "040-square-glass-native-mini-player.patch"
+        "040-square-glass-native-mini-player.patch",
+        "094-square-settings-page.patch",
+        "095-square-settings-cards.patch",
+        "096-square-switch-contrast.patch",
+        "097-square-settings-toggle-cards.patch",
+        "106-square-runtime-theme.patch",
+        "107-square-design-settings.patch"
       ],
       "extensionFiles": [
         "dev/nino/squareglass/AccessoryGlass$0.smali",
@@ -19,19 +26,17 @@
         "dev/nino/squareglass/AccessoryGlass$3.smali",
         "dev/nino/squareglass/AccessoryGlass.smali",
         "dev/nino/squareglass/ArtworkLoader.smali",
-        "dev/nino/squareglass/BackdropCapturePolicy.smali",
         "dev/nino/squareglass/ComposableSingletons$DesignEntryKt$0.smali",
+        "dev/nino/squareglass/ComposableSingletons$DesignEntryKt$1.smali",
+        "dev/nino/squareglass/ComposableSingletons$DesignEntryKt$2.smali",
+        "dev/nino/squareglass/ComposableSingletons$DesignEntryKt$3.smali",
+        "dev/nino/squareglass/ComposableSingletons$DesignEntryKt$4.smali",
+        "dev/nino/squareglass/ComposableSingletons$DesignEntryKt$5.smali",
+        "dev/nino/squareglass/ComposableSingletons$DesignEntryKt$6.smali",
+        "dev/nino/squareglass/ComposableSingletons$DesignEntryKt$7.smali",
         "dev/nino/squareglass/ComposableSingletons$DesignEntryKt.smali",
         "dev/nino/squareglass/ComposableSingletons$SearchChromeKt$0.smali",
         "dev/nino/squareglass/ComposableSingletons$SearchChromeKt.smali",
-        "dev/nino/squareglass/ComposeSheetGlass$0.smali",
-        "dev/nino/squareglass/ComposeSheetGlass$1.smali",
-        "dev/nino/squareglass/ComposeSheetGlass$2.smali",
-        "dev/nino/squareglass/ComposeSheetGlass$3.smali",
-        "dev/nino/squareglass/ComposeSheetGlass$4.smali",
-        "dev/nino/squareglass/ComposeSheetGlass$Sample.smali",
-        "dev/nino/squareglass/ComposeSheetGlass$surface$lambda$1$0$$inlined$onDispose$1.smali",
-        "dev/nino/squareglass/ComposeSheetGlass.smali",
         "dev/nino/squareglass/CoverColors.smali",
         "dev/nino/squareglass/CoverLoader$0.smali",
         "dev/nino/squareglass/CoverLoader$1.smali",
@@ -54,11 +59,6 @@
         "dev/nino/squareglass/DesignEntry$22.smali",
         "dev/nino/squareglass/DesignEntry$23.smali",
         "dev/nino/squareglass/DesignEntry$24.smali",
-        "dev/nino/squareglass/DesignEntry$25.smali",
-        "dev/nino/squareglass/DesignEntry$26.smali",
-        "dev/nino/squareglass/DesignEntry$27.smali",
-        "dev/nino/squareglass/DesignEntry$28.smali",
-        "dev/nino/squareglass/DesignEntry$29.smali",
         "dev/nino/squareglass/DesignEntry$3.smali",
         "dev/nino/squareglass/DesignEntry$4.smali",
         "dev/nino/squareglass/DesignEntry$5.smali",
@@ -72,15 +72,6 @@
         "dev/nino/squareglass/GlassHost$0.smali",
         "dev/nino/squareglass/GlassHost$1.smali",
         "dev/nino/squareglass/GlassHost.smali",
-        "dev/nino/squareglass/GlassMotion$0.smali",
-        "dev/nino/squareglass/GlassMotion$1.smali",
-        "dev/nino/squareglass/GlassMotion$2.smali",
-        "dev/nino/squareglass/GlassMotion$3.smali",
-        "dev/nino/squareglass/GlassMotion$4.smali",
-        "dev/nino/squareglass/GlassMotion$5.smali",
-        "dev/nino/squareglass/GlassMotion$6.smali",
-        "dev/nino/squareglass/GlassMotion$7.smali",
-        "dev/nino/squareglass/GlassMotion.smali",
         "dev/nino/squareglass/GlassPanels$0.smali",
         "dev/nino/squareglass/GlassPanels$1.smali",
         "dev/nino/squareglass/GlassPanels$2.smali",
@@ -108,31 +99,22 @@
         "dev/nino/squareglass/IconMotion$4.smali",
         "dev/nino/squareglass/IconMotion$5.smali",
         "dev/nino/squareglass/IconMotion$6.smali",
+        "dev/nino/squareglass/IconMotion$7.smali",
         "dev/nino/squareglass/IconMotion$Entry.smali",
         "dev/nino/squareglass/IconMotion$decorate$2$1.smali",
         "dev/nino/squareglass/IconMotion$decorate$3$1.smali",
         "dev/nino/squareglass/IconMotion$decorate$4$1.smali",
         "dev/nino/squareglass/IconMotion$decorate$6$1$1.smali",
         "dev/nino/squareglass/IconMotion$decorate$6$1.smali",
-        "dev/nino/squareglass/IconMotion$decorate$lambda$17$0$$inlined$onDispose$1.smali",
+        "dev/nino/squareglass/IconMotion$decorate$lambda$20$0$$inlined$onDispose$1.smali",
         "dev/nino/squareglass/IconMotion$tick$1.smali",
         "dev/nino/squareglass/IconMotion$watch$1$1.smali",
         "dev/nino/squareglass/IconMotion$watch$1.smali",
         "dev/nino/squareglass/IconMotion.smali",
-        "dev/nino/squareglass/LinnCache$0.smali",
-        "dev/nino/squareglass/LinnCache$Entry.smali",
-        "dev/nino/squareglass/LinnCache.smali",
-        "dev/nino/squareglass/LinnCommandQueue$0.smali",
-        "dev/nino/squareglass/LinnCommandQueue$1.smali",
-        "dev/nino/squareglass/LinnCommandQueue.smali",
-        "dev/nino/squareglass/LinnDiscovery$Result.smali",
-        "dev/nino/squareglass/LinnDiscovery.smali",
-        "dev/nino/squareglass/LinnEvent.smali",
         "dev/nino/squareglass/LinnEvents$0.smali",
         "dev/nino/squareglass/LinnEvents$1.smali",
         "dev/nino/squareglass/LinnEvents$2.smali",
         "dev/nino/squareglass/LinnEvents$3.smali",
-        "dev/nino/squareglass/LinnEvents$4.smali",
         "dev/nino/squareglass/LinnEvents.smali",
         "dev/nino/squareglass/LinnNativeVolume$0.smali",
         "dev/nino/squareglass/LinnNativeVolume.smali",
@@ -152,19 +134,13 @@
         "dev/nino/squareglass/LinnPlayer$17.smali",
         "dev/nino/squareglass/LinnPlayer$18.smali",
         "dev/nino/squareglass/LinnPlayer$19.smali",
+        "dev/nino/squareglass/LinnPlayer$2$0.smali",
+        "dev/nino/squareglass/LinnPlayer$2$1.smali",
         "dev/nino/squareglass/LinnPlayer$2.smali",
         "dev/nino/squareglass/LinnPlayer$20.smali",
-        "dev/nino/squareglass/LinnPlayer$21.smali",
-        "dev/nino/squareglass/LinnPlayer$22.smali",
-        "dev/nino/squareglass/LinnPlayer$23.smali",
-        "dev/nino/squareglass/LinnPlayer$24.smali",
-        "dev/nino/squareglass/LinnPlayer$25.smali",
-        "dev/nino/squareglass/LinnPlayer$26.smali",
-        "dev/nino/squareglass/LinnPlayer$27.smali",
-        "dev/nino/squareglass/LinnPlayer$28.smali",
-        "dev/nino/squareglass/LinnPlayer$29.smali",
+        "dev/nino/squareglass/LinnPlayer$3$0.smali",
+        "dev/nino/squareglass/LinnPlayer$3$1.smali",
         "dev/nino/squareglass/LinnPlayer$3.smali",
-        "dev/nino/squareglass/LinnPlayer$30.smali",
         "dev/nino/squareglass/LinnPlayer$4.smali",
         "dev/nino/squareglass/LinnPlayer$5.smali",
         "dev/nino/squareglass/LinnPlayer$6.smali",
@@ -186,19 +162,7 @@
         "dev/nino/squareglass/LinnProvider$18.smali",
         "dev/nino/squareglass/LinnProvider$19.smali",
         "dev/nino/squareglass/LinnProvider$2.smali",
-        "dev/nino/squareglass/LinnProvider$20.smali",
-        "dev/nino/squareglass/LinnProvider$21.smali",
-        "dev/nino/squareglass/LinnProvider$22.smali",
-        "dev/nino/squareglass/LinnProvider$23.smali",
-        "dev/nino/squareglass/LinnProvider$24.smali",
-        "dev/nino/squareglass/LinnProvider$25.smali",
-        "dev/nino/squareglass/LinnProvider$26.smali",
-        "dev/nino/squareglass/LinnProvider$27.smali",
-        "dev/nino/squareglass/LinnProvider$28.smali",
-        "dev/nino/squareglass/LinnProvider$29.smali",
         "dev/nino/squareglass/LinnProvider$3.smali",
-        "dev/nino/squareglass/LinnProvider$30.smali",
-        "dev/nino/squareglass/LinnProvider$31.smali",
         "dev/nino/squareglass/LinnProvider$4.smali",
         "dev/nino/squareglass/LinnProvider$5.smali",
         "dev/nino/squareglass/LinnProvider$6.smali",
@@ -209,12 +173,6 @@
         "dev/nino/squareglass/LinnProvider$Phase.smali",
         "dev/nino/squareglass/LinnProvider.smali",
         "dev/nino/squareglass/LinnQueuePlan.smali",
-        "dev/nino/squareglass/LinnQueueTransaction$Track.smali",
-        "dev/nino/squareglass/LinnQueueTransaction.smali",
-        "dev/nino/squareglass/LinnTrackSelection$0.smali",
-        "dev/nino/squareglass/LinnTrackSelection$1.smali",
-        "dev/nino/squareglass/LinnTrackSelection$Goal.smali",
-        "dev/nino/squareglass/LinnTrackSelection.smali",
         "dev/nino/squareglass/LiquidMenuSurface$0.smali",
         "dev/nino/squareglass/LiquidMenuSurface$1.smali",
         "dev/nino/squareglass/LiquidMenuSurface$2.smali",
@@ -227,12 +185,6 @@
         "dev/nino/squareglass/LiquidMenuSurface$paint$1.smali",
         "dev/nino/squareglass/LiquidMenuSurface$paint$2.smali",
         "dev/nino/squareglass/LiquidMenuSurface.smali",
-        "dev/nino/squareglass/LiquidViewMotion$0.smali",
-        "dev/nino/squareglass/LiquidViewMotion$1.smali",
-        "dev/nino/squareglass/LiquidViewMotion$Binding.smali",
-        "dev/nino/squareglass/LiquidViewMotion$animate$job$1$0.smali",
-        "dev/nino/squareglass/LiquidViewMotion$animate$job$1.smali",
-        "dev/nino/squareglass/LiquidViewMotion.smali",
         "dev/nino/squareglass/MiniProgress$0.smali",
         "dev/nino/squareglass/MiniProgress$decorate$1$1.smali",
         "dev/nino/squareglass/MiniProgress.smali",
@@ -252,11 +204,11 @@
         "dev/nino/squareglass/NativeGlass$2.smali",
         "dev/nino/squareglass/NativeGlass$3.smali",
         "dev/nino/squareglass/NativeGlass$4.smali",
+        "dev/nino/squareglass/NativeGlass$5.smali",
         "dev/nino/squareglass/NativeGlass.smali",
-        "dev/nino/squareglass/NativeIconGlass$0.smali",
-        "dev/nino/squareglass/NativeIconGlass$1.smali",
-        "dev/nino/squareglass/NativeIconGlass$State.smali",
-        "dev/nino/squareglass/NativeIconGlass.smali",
+        "dev/nino/squareglass/NativeIconMotion$0.smali",
+        "dev/nino/squareglass/NativeIconMotion$State$0.smali",
+        "dev/nino/squareglass/NativeIconMotion$State.smali",
         "dev/nino/squareglass/NativeIconMotion.smali",
         "dev/nino/squareglass/NativeLinnBridge.smali",
         "dev/nino/squareglass/NativeMiniGestures$0.smali",
@@ -288,15 +240,11 @@
         "dev/nino/squareglass/NativeTabs$6.smali",
         "dev/nino/squareglass/NativeTabs$7.smali",
         "dev/nino/squareglass/NativeTabs$8.smali",
-        "dev/nino/squareglass/NativeTabs$9.smali",
-        "dev/nino/squareglass/NativeTabs$TabOption.smali",
         "dev/nino/squareglass/NativeTabs.smali",
         "dev/nino/squareglass/NativeTheme.smali",
         "dev/nino/squareglass/NativeViewBackdrop$0.smali",
-        "dev/nino/squareglass/NativeViewBackdrop$Companion.smali",
         "dev/nino/squareglass/NativeViewBackdrop.smali",
         "dev/nino/squareglass/OpenHome$0.smali",
-        "dev/nino/squareglass/OpenHome$1.smali",
         "dev/nino/squareglass/OpenHome$Failure.smali",
         "dev/nino/squareglass/OpenHome$Fault.smali",
         "dev/nino/squareglass/OpenHome$NetworkBinding.smali",
@@ -333,6 +281,8 @@
         "dev/nino/squareglass/PlayerArtwork$11.smali",
         "dev/nino/squareglass/PlayerArtwork$12.smali",
         "dev/nino/squareglass/PlayerArtwork$13.smali",
+        "dev/nino/squareglass/PlayerArtwork$14.smali",
+        "dev/nino/squareglass/PlayerArtwork$15.smali",
         "dev/nino/squareglass/PlayerArtwork$2.smali",
         "dev/nino/squareglass/PlayerArtwork$3.smali",
         "dev/nino/squareglass/PlayerArtwork$4.smali",
@@ -351,24 +301,21 @@
         "dev/nino/squareglass/PlayerWindow$Snapshot$1.smali",
         "dev/nino/squareglass/PlayerWindow$Snapshot.smali",
         "dev/nino/squareglass/PlayerWindow.smali",
-        "dev/nino/squareglass/PlaylistSearch$1.smali",
-        "dev/nino/squareglass/PlaylistSearch.smali",
-        "dev/nino/squareglass/PlaylistSortMenu$0.smali",
-        "dev/nino/squareglass/PlaylistSortMenu.smali",
         "dev/nino/squareglass/ProbeDiagnostics$1.smali",
         "dev/nino/squareglass/ProbeDiagnostics$2.smali",
         "dev/nino/squareglass/ProbeDiagnostics.smali",
         "dev/nino/squareglass/QueueGlass$0.smali",
         "dev/nino/squareglass/QueueGlass$1.smali",
         "dev/nino/squareglass/QueueGlass$2.smali",
+        "dev/nino/squareglass/QueueGlass$3.smali",
         "dev/nino/squareglass/QueueGlass.smali",
         "dev/nino/squareglass/RecommendationUpdates$Pending$1.smali",
         "dev/nino/squareglass/RecommendationUpdates$Pending.smali",
         "dev/nino/squareglass/RecommendationUpdates$Revision.smali",
         "dev/nino/squareglass/RecommendationUpdates.smali",
+        "dev/nino/squareglass/SearchChrome$0.smali",
+        "dev/nino/squareglass/SearchChrome$1.smali",
         "dev/nino/squareglass/SearchChrome.smali",
-        "dev/nino/squareglass/SheetChrome$1.smali",
-        "dev/nino/squareglass/SheetChrome.smali",
         "dev/nino/squareglass/SleepDeadline.smali",
         "dev/nino/squareglass/SleepTimer$0.smali",
         "dev/nino/squareglass/SleepTimer$1.smali",
@@ -429,6 +376,7 @@
         "dev/nino/squareglass/SquareLyrics.smali",
         "dev/nino/squareglass/SquareMarketConfig.smali",
         "dev/nino/squareglass/SquareMarketTokens.smali",
+        "dev/nino/squareglass/SquareMenus$1.smali",
         "dev/nino/squareglass/SquareMenus$Presentation$0.smali",
         "dev/nino/squareglass/SquareMenus$Presentation$1.smali",
         "dev/nino/squareglass/SquareMenus$Presentation$2.smali",
@@ -438,11 +386,9 @@
         "dev/nino/squareglass/SquareOutput$1.smali",
         "dev/nino/squareglass/SquareOutput$2.smali",
         "dev/nino/squareglass/SquareOutput$3.smali",
-        "dev/nino/squareglass/SquareOutput$4.smali",
         "dev/nino/squareglass/SquareOutput$Request.smali",
         "dev/nino/squareglass/SquareOutput$Session$0.smali",
         "dev/nino/squareglass/SquareOutput$Session$1.smali",
-        "dev/nino/squareglass/SquareOutput$Session$10.smali",
         "dev/nino/squareglass/SquareOutput$Session$2.smali",
         "dev/nino/squareglass/SquareOutput$Session$3.smali",
         "dev/nino/squareglass/SquareOutput$Session$4.smali",
@@ -450,7 +396,6 @@
         "dev/nino/squareglass/SquareOutput$Session$6.smali",
         "dev/nino/squareglass/SquareOutput$Session$7.smali",
         "dev/nino/squareglass/SquareOutput$Session$8.smali",
-        "dev/nino/squareglass/SquareOutput$Session$9.smali",
         "dev/nino/squareglass/SquareOutput$Session$OutputGlyph.smali",
         "dev/nino/squareglass/SquareOutput$Session.smali",
         "dev/nino/squareglass/SquareOutput.smali",
@@ -474,9 +419,7 @@
         "dev/nino/squareglass/SquareSongMenu.smali",
         "dev/nino/squareglass/SquareSwitchPaint.smali",
         "dev/nino/squareglass/SquareTypography.smali",
-        "dev/nino/squareglass/SurfaceMotion$0.smali",
         "dev/nino/squareglass/SurfaceMotion$1.smali",
-        "dev/nino/squareglass/SurfaceMotion$2.smali",
         "dev/nino/squareglass/SurfaceMotion.smali",
         "dev/nino/squareglass/SystemBarTheme.smali",
         "dev/nino/squareglass/TimeTaste.smali",
@@ -593,7 +536,6 @@
         "dev/nino/squareglass/material/DampedDragAnimation$release$1$invokeSuspend$$inlined$filter$1$2.smali",
         "dev/nino/squareglass/material/DampedDragAnimation$release$1$invokeSuspend$$inlined$filter$1.smali",
         "dev/nino/squareglass/material/DampedDragAnimation$release$1.smali",
-        "dev/nino/squareglass/material/DampedDragAnimation$resetMotion$1.smali",
         "dev/nino/squareglass/material/DampedDragAnimation$updateValue$1$1$0.smali",
         "dev/nino/squareglass/material/DampedDragAnimation$updateValue$1$1.smali",
         "dev/nino/squareglass/material/DampedDragAnimation$updateValue$1.smali",
@@ -629,21 +571,21 @@
         "dev/nino/squareglass/material/InkKt.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$0.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$1.smali",
-        "dev/nino/squareglass/material/InteractiveHighlight$animatePress$1.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$0.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$1$1$1.smali",
+        "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$1$1$2.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$1$1.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$1.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$2$1$1.smali",
+        "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$2$1$2.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$2$1.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$2.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$3$1$1.smali",
+        "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$3$1$2.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$3$1.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$3.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1$4$1.smali",
         "dev/nino/squareglass/material/InteractiveHighlight$gestureModifier$1.smali",
-        "dev/nino/squareglass/material/InteractiveHighlight$pulse$1.smali",
-        "dev/nino/squareglass/material/InteractiveHighlight$reset$1.smali",
         "dev/nino/squareglass/material/InteractiveHighlight.smali",
         "dev/nino/squareglass/material/LiquidBottomTabKt$0.smali",
         "dev/nino/squareglass/material/LiquidBottomTabKt$1.smali",
@@ -661,7 +603,18 @@
         "dev/nino/squareglass/material/LiquidBottomTabsKt$16.smali",
         "dev/nino/squareglass/material/LiquidBottomTabsKt$17.smali",
         "dev/nino/squareglass/material/LiquidBottomTabsKt$18.smali",
+        "dev/nino/squareglass/material/LiquidBottomTabsKt$19.smali",
         "dev/nino/squareglass/material/LiquidBottomTabsKt$2.smali",
+        "dev/nino/squareglass/material/LiquidBottomTabsKt$20.smali",
+        "dev/nino/squareglass/material/LiquidBottomTabsKt$21.smali",
+        "dev/nino/squareglass/material/LiquidBottomTabsKt$22.smali",
+        "dev/nino/squareglass/material/LiquidBottomTabsKt$23.smali",
+        "dev/nino/squareglass/material/LiquidBottomTabsKt$24.smali",
+        "dev/nino/squareglass/material/LiquidBottomTabsKt$25.smali",
+        "dev/nino/squareglass/material/LiquidBottomTabsKt$26.smali",
+        "dev/nino/squareglass/material/LiquidBottomTabsKt$27.smali",
+        "dev/nino/squareglass/material/LiquidBottomTabsKt$28.smali",
+        "dev/nino/squareglass/material/LiquidBottomTabsKt$29.smali",
         "dev/nino/squareglass/material/LiquidBottomTabsKt$3.smali",
         "dev/nino/squareglass/material/LiquidBottomTabsKt$4.smali",
         "dev/nino/squareglass/material/LiquidBottomTabsKt$5.smali",
@@ -672,11 +625,9 @@
         "dev/nino/squareglass/material/LiquidBottomTabsKt$LiquidBottomTabs$1$1$1$0.smali",
         "dev/nino/squareglass/material/LiquidBottomTabsKt$LiquidBottomTabs$1$1$1$2.smali",
         "dev/nino/squareglass/material/LiquidBottomTabsKt$LiquidBottomTabs$1$1$1.smali",
-        "dev/nino/squareglass/material/LiquidBottomTabsKt$LiquidBottomTabs$1$2$1.smali",
         "dev/nino/squareglass/material/LiquidBottomTabsKt$LiquidBottomTabs$1$dampedDragAnimation$1$2$1.smali",
         "dev/nino/squareglass/material/LiquidBottomTabsKt$LiquidBottomTabs$1$dampedDragAnimation$1$4$1.smali",
         "dev/nino/squareglass/material/LiquidBottomTabsKt.smali",
-        "dev/nino/squareglass/material/LiquidMotion.smali",
         "dev/nino/squareglass/material/shapes/AdvancedContinuity.smali",
         "dev/nino/squareglass/material/shapes/Continuity$Companion.smali",
         "dev/nino/squareglass/material/shapes/Continuity$DefaultImpls.smali",
@@ -709,12 +660,13 @@
         "dev/nino/squareglass/material/shapes/path/PathSegmentsBuilderKt.smali",
         "dev/nino/squareglass/material/shapes/path/PathSegmentsKt.smali"
       ],
-      "title": "Liquidify \u00b7 Glass navigation",
-      "description": "AndroidLiquidGlass navigation, mini-player and runtime design settings. Keeps native TIDAL routes and actions. Requires Liquidify Manager 1.1.1-beta.1.",
+      "title": "Liquidify \u00b7 Glass Core",
+      "description": "Foundation for Android Liquid Glass: host architecture, shell backdrop, adaptive tab bar, and settings hooks. Required for all Liquidify extensions.",
       "default": true,
       "disables": [
         "EnableLegacyUi",
-        "MiniPlayerRedesign"
+        "MiniPlayerRedesign",
+        "PlayerBackdrop"
       ],
       "advancedOptions": [
         {
@@ -738,9 +690,10 @@
       ]
     },
     {
-      "id": "LiquidifyTheme",
+      "id": "LiquidifyPalette",
       "source": "liquidify",
-      "order": -20,
+      "category": "patch",
+      "order": -45,
       "fileNames": [
         "050-square-wave-colors.patch",
         "051-square-wave-theme.patch",
@@ -748,17 +701,64 @@
         "053-square-market-system-theme.patch",
         "054-square-wave-corners.patch",
         "055-square-wave-one-colors.patch",
-        "056-square-market-tokens.patch",
+        "056-square-market-tokens.patch"
+      ],
+      "requires": [
+        "LiquidifyCore"
+      ],
+      "title": "Liquidify \u00b7 Palettes & Contrasts",
+      "description": "Wave and Market color schemes, optimized OLED contrasts, and semantic surface color tokens.",
+      "default": true
+    },
+    {
+      "id": "LiquidifyHome",
+      "source": "liquidify",
+      "category": "patch",
+      "order": -40,
+      "fileNames": [
         "060-square-home-surface.patch",
         "061-square-home-appbar.patch",
         "062-square-home-refresh.patch",
-        "063-square-mini-contrast.patch",
         "064-square-home-heading.patch",
         "065-square-home-error.patch",
         "066-square-home-loading.patch",
         "067-square-primary-row.patch",
         "068-square-text-row.patch",
         "069-square-artist-caption.patch",
+        "084-square-home-filters.patch",
+        "085-square-home-shortcuts.patch",
+        "086-square-home-shortcut-icon.patch",
+        "087-square-home-toolbar-surface.patch",
+        "088-square-library-grid.patch",
+        "089-square-home-artwork-shadow.patch",
+        "098-square-explore-page.patch",
+        "099-square-native-search-field.patch",
+        "133-square-listening-observer.patch",
+        "134-square-home-actions.patch",
+        "136-square-clear-listening-on-logout.patch",
+        "147-square-recommendation-batch.patch",
+        "148-square-recommendation-result.patch",
+        "149-square-recommendation-position.patch",
+        "150-square-search-input-container.patch",
+        "151-square-search-input-cursor.patch",
+        "161-square-search-results-inset.patch",
+        "162-square-search-filter-pills.patch"
+      ],
+      "requires": [
+        "LiquidifyCore",
+        "LiquidifyPalette"
+      ],
+      "title": "Liquidify \u00b7 Home & Explore",
+      "description": "Translucent app bar, liquid filter pills, shortcuts, clean Explore search, and time-of-day listening habits.",
+      "default": true
+    },
+    {
+      "id": "LiquidifyPlayer",
+      "source": "liquidify",
+      "category": "patch",
+      "order": -35,
+      "fileNames": [
+        "063-square-mini-contrast.patch",
         "070-square-artwork-corners.patch",
         "071-square-player-background.patch",
         "072-square-player-blur-film.patch",
@@ -773,90 +773,145 @@
         "081-square-broadcast-icon.patch",
         "082-square-toolbar-icons.patch",
         "083-square-lyrics-viewport.patch",
-        "084-square-home-filters.patch",
-        "085-square-home-shortcuts.patch",
-        "086-square-home-shortcut-icon.patch",
-        "087-square-home-toolbar-surface.patch",
-        "088-square-library-grid.patch",
-        "089-square-home-artwork-shadow.patch",
-        "090-square-context-menu-presentation.patch",
-        "091-square-context-menu-dismiss.patch",
-        "092-square-context-menu-contrast.patch",
-        "093-square-menu-anchor.patch",
-        "094-square-settings-page.patch",
-        "095-square-settings-cards.patch",
-        "096-square-switch-contrast.patch",
-        "097-square-settings-toggle-cards.patch",
-        "098-square-explore-page.patch",
-        "099-square-native-search-field.patch",
-        "100-square-module-header-contrast.patch",
-        "101-square-mix-page.patch",
-        "102-square-mix-header.patch",
-        "103-square-track-artwork.patch",
-        "104-square-collection-track-artwork.patch",
-        "105-square-legacy-track-artwork.patch",
-        "106-square-runtime-theme.patch",
-        "107-square-design-settings.patch",
-        "108-square-album-header.patch",
         "109-square-player-artwork-background.patch",
         "110-square-player-background-contrast.patch",
         "111-square-player-secondary-bar.patch",
         "112-square-player-footer-s3.patch",
         "113-square-player-footer-e5.patch",
         "114-square-player-footer-l0.patch",
-        "115-square-playlist-hero.patch",
-        "132-square-mini-gestures.patch",
-        "133-square-listening-observer.patch",
-        "134-square-home-actions.patch",
-        "136-square-clear-listening-on-logout.patch",
-        "137-square-cover-page-color.patch",
         "138-square-player-cover-fade.patch",
         "139-square-player-cover-spacing.patch",
-        "140-square-native-tab-feedback.patch",
-        "141-square-accessory-press-feedback.patch",
-        "142-square-player-top-edge.patch",
+        "142-square-player-top-edge.patch"
+      ],
+      "requires": [
+        "LiquidifyCore",
+        "LiquidifyPalette"
+      ],
+      "disables": [
+        "PlayerBackdrop"
+      ],
+      "title": "Liquidify \u00b7 Now Playing & Player",
+      "description": "1:1 uncropped square artwork, bottom cover gradient fade, floating glass action buttons, and dynamic seekbar.",
+      "default": true
+    },
+    {
+      "id": "LiquidifyDetails",
+      "source": "liquidify",
+      "category": "patch",
+      "order": -30,
+      "fileNames": [
+        "100-square-module-header-contrast.patch",
+        "101-square-mix-page.patch",
+        "102-square-mix-header.patch",
+        "103-square-track-artwork.patch",
+        "104-square-collection-track-artwork.patch",
+        "105-square-legacy-track-artwork.patch",
+        "108-square-album-header.patch",
+        "115-square-playlist-hero.patch",
+        "137-square-cover-page-color.patch",
+        "144-square-upload-padding.patch",
+        "176-square-playlist-sort-menu.patch",
+        "177-square-playlist-search.patch"
+      ],
+      "requires": [
+        "LiquidifyCore",
+        "LiquidifyPalette"
+      ],
+      "title": "Liquidify \u00b7 Albums, Mixes & Playlists",
+      "description": "Full-bleed headers for playlists and mixes, transparent scrolling toolbars, smooth artist fade, and 10dp rounded cover thumbnails.",
+      "default": true
+    },
+    {
+      "id": "LiquidifyMenus",
+      "source": "liquidify",
+      "category": "patch",
+      "order": -25,
+      "fileNames": [
+        "090-square-context-menu-presentation.patch",
+        "091-square-context-menu-dismiss.patch",
+        "092-square-context-menu-contrast.patch",
+        "093-square-menu-anchor.patch",
         "143-square-player-menu-source.patch",
         "144-square-queue-glass.patch",
         "145-square-text-field-glass.patch",
+        "175-square-sheet-lifecycle.patch",
+        "178-square-compose-sheet-glass.patch"
+      ],
+      "requires": [
+        "LiquidifyCore",
+        "LiquidifyPalette"
+      ],
+      "title": "Liquidify \u00b7 Liquid Menus & Queue",
+      "description": "Floating frosted glass context menus without shadow bars, queue glass backdrop, and refined submenu presentation.",
+      "default": true
+    },
+    {
+      "id": "LiquidifyGestures",
+      "source": "liquidify",
+      "category": "patch",
+      "order": -20,
+      "fileNames": [
+        "132-square-mini-gestures.patch",
+        "140-square-native-tab-feedback.patch",
+        "141-square-accessory-press-feedback.patch",
         "146-square-gesture-mini-controls.patch",
-        "147-square-recommendation-batch.patch",
-        "148-square-recommendation-result.patch",
-        "149-square-recommendation-position.patch",
-        "150-square-search-input-container.patch",
-        "151-square-search-input-cursor.patch",
         "152-square-favorite-motion.patch",
         "153-square-settings-icon-motion.patch",
         "154-square-collection-settings-motion.patch",
         "155-square-native-favorite-motion.patch",
         "156-square-slider-thumb-motion.patch",
-        "157-square-liquid-press-motion.patch",
-        "157-square-output-popup.patch",
-        "158-square-output-anchor.patch",
-        "159-square-linn-provider.patch",
-        "160-square-linn-player.patch",
-        "175-square-sheet-lifecycle.patch",
-        "176-square-playlist-sort-menu.patch",
-        "177-square-playlist-search.patch",
-        "178-square-compose-sheet-glass.patch"
+        "157-square-liquid-press-motion.patch"
       ],
       "requires": [
         "LiquidifyCore"
       ],
-      "title": "Liquidify \u00b7 Design and gestures",
-      "description": "Anchored Liquid Glass Output popup with native TIDAL devices and an integrated Linn OpenHome provider. Device-side TIDAL queue, central playback adapter, remote volume and reconnect. Requires TIDAL sign-in for the renderer through the Linn app. Beta; see LINN_OUTPUT.md for tested scope.",
+      "title": "Liquidify \u00b7 Gestures & Haptics",
+      "description": "Track swipe to queue with circular cover preview, mini-player swipe gestures, haptic tab feedback, and inertial animations.",
+      "default": true
+    },
+    {
+      "id": "LiquidifyLinn",
+      "source": "liquidify",
+      "category": "patch",
+      "order": -15,
+      "fileNames": [
+        "157-square-output-popup.patch",
+        "158-square-output-anchor.patch",
+        "159-square-linn-provider.patch",
+        "160-square-linn-player.patch"
+      ],
+      "requires": [
+        "LiquidifyCore"
+      ],
+      "title": "Liquidify \u00b7 Linn OpenHome Streaming",
+      "description": "Liquid Glass output device picker with native TIDAL Connect integration, remote volume control, and built-in Linn OpenHome renderer.",
       "default": true
     },
     {
       "id": "LiquidifyTypography",
       "source": "liquidify",
+      "category": "patch",
       "order": -10,
       "fileNames": [],
       "requires": [
         "LiquidifyCore"
       ],
-      "title": "Liquidify \u00b7 Typography",
-      "description": "Static Inter font instances, with original labels and accessibility text retained.",
+      "title": "Liquidify \u00b7 Inter Typography",
+      "description": "Static Inter font family instances while fully preserving all original labels, font weights, and accessibility strings.",
       "default": true
+    },
+    {
+      "id": "PreventPlayStoreUpdates",
+      "source": "radiantLyrics",
+      "order": 5,
+      "fileNames": [],
+      "title": "Prevent Play Store Updates",
+      "description": "Sets the APK's versionCode to 2147483647 (Integer.MAX_VALUE) and versionName to 99.99.99 in AndroidManifest.xml. This halts automatic and accidental Google Play Store updates that would overwrite your patched app.",
+      "default": true,
+      "category": "patch",
+      "compatibleWith": [
+        "LiquidifyCore"
+      ]
     },
     {
       "id": "EnableLegacyUi",
@@ -881,7 +936,9 @@
         "LyricsReplaceLyricsButton",
         "LyricsReplaceShareButton",
         "LyricsKeepControlsVisible"
-      ]
+      ],
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "LyricsRlApi",
@@ -894,7 +951,7 @@
       "title": "Radiant Lyrics API - WIP",
       "description": "Use Radiant Lyrics API to fetch Lyrics (Syllable Level & Higher Quality)",
       "default": false,
-      "defaultVariantIndex": 0,
+      "defaultVariantIndex": 2,
       "variants": [
         {
           "title": "Line",
@@ -914,15 +971,15 @@
         }
       ],
       "extensionFiles": [
-        "radiant/HomeBackdrop.smali",
-        "radiant/IsrcCache.smali",
         "radiant/RLAPILyricsHook.smali",
         "radiant/RLAPILyricsWorker.smali",
-        "radiant/StickyLyrics.smali",
+        "radiant/IsrcCache.smali",
+        "radiant/WordLyrics.smali",
+        "radiant/WordLyricsTick.smali",
         "radiant/SylBrush.smali",
         "radiant/SylLayout.smali",
-        "radiant/WordLyrics.smali",
-        "radiant/WordLyricsTick.smali"
+        "radiant/StickyLyrics.smali",
+        "radiant/HomeBackdrop.smali"
       ],
       "advancedOptions": [
         {
@@ -971,11 +1028,11 @@
           "token": "RL_CTX"
         }
       ],
-      "source": "radiantLyrics",
       "compatibleWith": [
-        "LiquidifyCore",
-        "LiquidifyTheme"
-      ]
+        "LiquidifyCore"
+      ],
+      "category": "patch",
+      "source": "radiantLyrics"
     },
     {
       "id": "PlayerBackdrop",
@@ -989,8 +1046,7 @@
         {
           "title": "Tidal",
           "fileNames": [
-            "player-backdrop-playback.patch",
-            "player-native-backdrop-liquidify.patch"
+            "player-backdrop-playback.patch"
           ],
           "extensionFiles": [
             "radiant/BackdropFx.smali"
@@ -1002,8 +1058,9 @@
             "player-backdrop-kawarp.patch"
           ],
           "extensionFiles": [
+            "radiant/Kawarp.smali",
             "dev/kawarp/KawarpEngine.smali",
-            "radiant/Kawarp.smali"
+            "radiant/HomeBackdrop.smali"
           ],
           "minSdk": 33
         }
@@ -1248,22 +1305,16 @@
           "inline": true,
           "fileNames": [
             "home-backdrop.patch",
-            "collection-backdrop-liquidify.patch",
+            "collection-backdrop.patch",
             "cover-capture.patch"
+          ],
+          "extensionFiles": [
+            "radiant/HomeBackdrop.smali"
           ]
         }
       ],
       "source": "radiantLyrics",
-      "compatibleWith": [
-        "LiquidifyCore",
-        "LiquidifyTheme"
-      ],
-      "requires": [
-        "LiquidifyTheme"
-      ],
-      "extensionFiles": [
-        "radiant/HomeBackdrop.smali"
-      ]
+      "category": "patch"
     },
     {
       "id": "QualityBadgeColors",
@@ -1271,9 +1322,14 @@
       "fileNames": [
         "player-quality-badge-colors.patch"
       ],
+      "extensionFiles": [
+        "radiant/QualityBadge.smali"
+      ],
       "title": "Quality Badge Colors",
       "description": "Brings color back to the player quality badge.",
-      "default": true
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "PlayerMovePlayingFrom",
@@ -1286,7 +1342,9 @@
       ],
       "title": "Playing From",
       "description": "Shows the source name (playlist/album/mix) above the track title",
-      "default": true
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "PlayerOneHanded",
@@ -1296,7 +1354,9 @@
       ],
       "title": "One-Handed Mode",
       "description": "Mirrors the bottom player buttons left-to-right for easier one-handed reach.",
-      "default": false
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "SwipeToQueue",
@@ -1432,7 +1492,9 @@
           "default": -14408663,
           "token": "RL_SWIPE_TO_QUEUE_ADD_TO_PLAYLIST_COLOR"
         }
-      ]
+      ],
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "LyricsProgressPill",
@@ -1441,14 +1503,20 @@
         "lyrics-progress-pill.patch",
         "lyrics-fade-region.patch"
       ],
+      "extensionFiles": [
+        "radiant/NoOp.smali",
+        "radiant/SpvFactory.smali"
+      ],
       "title": "Lyrics Progress Pill",
       "description": "Restores the old Track Progress Pill in the top of the Lyrics screen!",
-      "default": true,
+      "default": false,
       "requires": [
         "LyricsDisableCover",
         "LyricsReplaceLyricsButton",
         "LyricsReplaceShareButton"
-      ]
+      ],
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "LyricsDisableCover",
@@ -1458,7 +1526,9 @@
       ],
       "title": "Disable Lyrics Cover",
       "description": "Removes the mini track cover from the lyrics screen.",
-      "default": true
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "LyricsReplaceLyricsButton",
@@ -1467,9 +1537,15 @@
         "lyrics-replace-lyrics-button.patch",
         "lyrics-sparkle-conditional-visibility.patch"
       ],
+      "extensionFiles": [
+        "radiant/SparkleButton.smali",
+        "radiant/SparkleContent.smali"
+      ],
       "title": "Replace Lyrics Button",
       "description": "Replaces the Lyrics button with the RL Sparkle!",
-      "default": true
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "LyricsReplaceShareButton",
@@ -1479,7 +1555,9 @@
       ],
       "title": "Replace Share Button",
       "description": "Replaces the share button with the Tidal Connect button from the top of the screen. (it's in the menu already)",
-      "default": true
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "MiniPlayerRedesign",
@@ -1498,12 +1576,20 @@
           "title": "Grey",
           "fileNames": [
             "mini-player-grey.patch"
+          ],
+          "extensionFiles": [
+            "radiant/MiniSeekerLine.smali",
+            "radiant/SeekerConsumer.smali"
           ]
         },
         {
           "title": "Black",
           "fileNames": [
             "mini-player-black.patch"
+          ],
+          "extensionFiles": [
+            "radiant/MiniSeekerLine.smali",
+            "radiant/SeekerConsumer.smali"
           ]
         }
       ],
@@ -1599,7 +1685,9 @@
             "com/tidal/android/feature/appscaffold/ui/r$c.smali"
           ]
         }
-      ]
+      ],
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "LyricsKeepControlsVisible",
@@ -1612,12 +1700,14 @@
       ],
       "title": "Keep Controls Visible",
       "description": "Inverts the auto-hide behavior on the lyrics screen, playback controls stay visible by default and only hide when you tap them off. Also stops the open lyrics view from randomly closing when the player re-fetches the same track.",
-      "default": true
+      "default": false,
+      "source": "radiantLyrics",
+      "category": "patch"
     },
     {
       "id": "WazeIntegration",
       "order": 90,
-      "category": "integration",
+      "category": "patch",
       "pathLocked": true,
       "fileNames": [
         "integration-waze-playback.patch"
@@ -1628,7 +1718,7 @@
       ],
       "title": "Waze Integration",
       "description": "Control TIDAL playback from the Waze app",
-      "default": true,
+      "default": false,
       "advancedOptions": [
         {
           "type": "choice",
@@ -1654,12 +1744,13 @@
           "default": -16747037,
           "token": "RL_WAZE_THEME_COLOR"
         }
-      ]
+      ],
+      "source": "radiantLyrics"
     },
     {
       "id": "PebbleIntegration",
       "order": 91,
-      "category": "integration",
+      "category": "patch",
       "fileNames": [
         "integration-pebble-playback.patch",
         "integration-pebble-lyrics.patch"
@@ -1678,7 +1769,8 @@
       "companionApp": {
         "storeId": "02b779dcf9084fecb0375df1",
         "storeSource": "https://appstore-api.repebble.com/api"
-      }
+      },
+      "source": "radiantLyrics"
     },
     {
       "id": "DebugMenuUnlock",
@@ -1689,14 +1781,14 @@
       "title": "Unlock Debug Menu",
       "description": "Reveals TIDAL's hidden Debug Menu in Settings. (Unlocks Feature Flags & the legacy Debug Options)",
       "default": false,
-      "source": "radiantLyrics",
       "compatibleWith": [
-        "LiquidifyCore",
-        "LiquidifyTheme"
-      ]
+        "LiquidifyCore"
+      ],
+      "category": "patch",
+      "source": "radiantLyrics"
     }
   ],
-  "releaseVersion": "1.1.1-beta.1",
+  "releaseVersion": "1.2.0-beta",
   "name": "Liquidify",
   "editor": "ninocss",
   "compatibility": {
@@ -1710,7 +1802,7 @@
     "strictSquarePatches": true
   },
   "designResources": {
-    "patchId": "LiquidifyTheme",
+    "patchId": "LiquidifyPalette",
     "palette": [
       {
         "id": "7f060019",

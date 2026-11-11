@@ -105,6 +105,14 @@ public final class SquareMenus {
         if (view instanceof TextView) {
             TextView text = (TextView)view;
             text.setTextColor(SquarePalette.ink(SquarePalette.isDark()));
+        } else if (view instanceof ImageView) {
+            int r = Math.round(10 * view.getResources().getDisplayMetrics().density);
+            view.setOutlineProvider(new android.view.ViewOutlineProvider() {
+                @Override public void getOutline(View v, android.graphics.Outline outline) {
+                    outline.setRoundRect(0, 0, v.getWidth(), v.getHeight(), r);
+                }
+            });
+            view.setClipToOutline(true);
         } else if (view instanceof ViewGroup) {
             ViewGroup group = (ViewGroup)view;
             // Legacy headers explicitly paint black independently of their parent.
@@ -294,6 +302,10 @@ public final class SquareMenus {
         }
 
         void makeShell(boolean sheet) {
+            View shadow = root.findViewById(0x7f0b0644);
+            if (shadow == null && root.getParent() instanceof View) shadow = ((View)root.getParent()).findViewById(0x7f0b0644);
+            if (shadow == null && dialog.getWindow() != null) shadow = dialog.getWindow().getDecorView().findViewById(0x7f0b0644);
+            if (shadow != null) shadow.setVisibility(View.GONE);
             glass = new LiquidMenuSurface(activity, playerSnapshot);
             shell = new FrameLayout(root.getContext());
             if (root.getParent() instanceof ViewGroup) {

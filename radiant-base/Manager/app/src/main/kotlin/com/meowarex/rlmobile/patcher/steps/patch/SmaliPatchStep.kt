@@ -84,7 +84,13 @@ class SmaliPatchStep(
         val substitutions = options.smaliSubstitutions(specs).toMutableMap()
         if (designMetadata?.compatibility?.capabilities?.contains("squareResourcesV1") == true) {
             substitutions["__RL_SQUARE_MANAGER_READY__"] = "0x1"
-            substitutions["__RL_SQUARE_THEME_ENABLED__"] = if (specs.firstOrNull { it.id == "LiquidifyTheme" || it.id == "SquareGlassTheme" }
+            val themeIds = setOfNotNull(
+                designMetadata?.designResources?.patchId,
+                "LiquidifyPalette",
+                "LiquidifyTheme",
+                "SquareGlassTheme"
+            )
+            substitutions["__RL_SQUARE_THEME_ENABLED__"] = if (specs.firstOrNull { it.id in themeIds }
                 ?.let(options::isEnabled) == true) "0x1" else "0x0"
         }
         if (substitutions.isNotEmpty()) {

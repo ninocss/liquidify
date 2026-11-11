@@ -43,7 +43,8 @@ object IconMotion {
                     }
                 }
             }
-            if(entries.isNotEmpty())handler.postDelayed(this,500)
+            val delay = if (!policy.ready(now, SquareSettings.motion() && !SquareMenus.hasOpenMenu())) 3000L else 12000L
+            if (entries.isNotEmpty() && SquareSettings.motion()) handler.postDelayed(this, delay)
         }
     }
     @JvmStatic fun touch(event: MotionEvent) {

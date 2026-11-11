@@ -16,22 +16,34 @@ OBJECT_METHODS = {
     "getClass()Ljava/lang/Class;", "notify()V", "notifyAll()V",
     "wait()V", "wait(J)V", "wait(JI)V", "clone()Ljava/lang/Object;", "finalize()V",
 }
-PLATFORM_INHERITED = {"Ljava/lang/Enum;": {"ordinal()I", "name()Ljava/lang/String;"},
-                      "Ljava/io/IOException;": {"getMessage()Ljava/lang/String;"},
-                      # Public View APIs referenced through app-defined subclasses.
-                      "Landroid/view/View;": {"getWidth()I", "getHeight()I",
-                          "getResources()Landroid/content/res/Resources;",
-                          "setImportantForAccessibility(I)V",
-                          "onAttachedToWindow()V", "onDetachedFromWindow()V",
-                          "dispatchTouchEvent(Landroid/view/MotionEvent;)Z"},
-                      "Landroid/view/ViewGroup;": {"drawChild(Landroid/graphics/Canvas;Landroid/view/View;J)Z",
-                          "onAttachedToWindow()V", "onDetachedFromWindow()V",
-                          "dispatchTouchEvent(Landroid/view/MotionEvent;)Z"},
-                      "Landroid/app/Activity;": {"dispatchTouchEvent(Landroid/view/MotionEvent;)Z"},
-                      "Landroid/app/Dialog;": {"show()V"}}
+ACTIVITY_METHODS = {"dispatchTouchEvent(Landroid/view/MotionEvent;)Z"}
+DIALOG_METHODS = {"show()V"}
+VIEW_METHODS = {
+    "getWidth()I", "getHeight()I",
+    "getResources()Landroid/content/res/Resources;",
+    "setImportantForAccessibility(I)V", "setPadding(IIII)V",
+    "onAttachedToWindow()V", "onDetachedFromWindow()V",
+}
+VIEW_GROUP_METHODS = VIEW_METHODS | {
+    "dispatchTouchEvent(Landroid/view/MotionEvent;)Z",
+    "drawChild(Landroid/graphics/Canvas;Landroid/view/View;J)Z",
+}
+PLATFORM_INHERITED = {
+    "Ljava/lang/Enum;": {"ordinal()I", "name()Ljava/lang/String;"},
+    "Ljava/io/IOException;": {"getMessage()Ljava/lang/String;"},
+    # Public View, Activity, and Dialog APIs referenced through app-defined subclasses.
+    "Landroid/view/View;": VIEW_METHODS,
+    "Landroid/view/ViewGroup;": VIEW_GROUP_METHODS,
+    "Landroid/app/Activity;": ACTIVITY_METHODS,
+    "Landroid/app/Dialog;": DIALOG_METHODS,
+}
+# Stripped build-time annotations preserved in host class attributes but not packaged.
+OPTIONAL_TYPES = {
+    "Lcom/squareup/anvil/annotations/ContributesBinding;",
+}
 
 
-def audit(host: dict, extension: dict, refs: dict) -> dict:
+def audit(host: dict, extension: dict, refs: dict, allow_duplicates: bool = False) -> dict:
     classes = host | extension
 
     def platform(t: str) -> bool:
@@ -62,7 +74,7 @@ def audit(host: dict, extension: dict, refs: dict) -> dict:
     missing_types = []
     for t in refs["types"]:
         t = t.lstrip("[")
-        if t.startswith("L") and not platform(t) and t not in classes:
+        if t.startswith("L") and not platform(t) and t not in classes and t not in OPTIONAL_TYPES:
             missing_types.append(t)
     missing_methods = []
     missing_fields = []
@@ -74,7 +86,7 @@ def audit(host: dict, extension: dict, refs: dict) -> dict:
             if not member_exists(owner, member, kind):
                 missing.append(ref)
     return {
-        "passed": not (missing_types or missing_methods or missing_fields or host.keys() & extension.keys()),
+        "passed": not (missing_types or missing_methods or missing_fields or (not allow_duplicates and host.keys() & extension.keys())),
         "hostClasses": len(host),
         "extensionClasses": len(extension),
         "duplicateClasses": sorted(host.keys() & extension.keys()),
@@ -91,11 +103,12 @@ def main() -> int:
     p.add_argument("--refs", required=True, type=Path)
     p.add_argument("--report", required=True, type=Path)
     p.add_argument("--dex", type=Path, help="Bind the successful report to these exact extension bytes")
+    p.add_argument("--allow-duplicates", action="store_true", help="Allow overlay classes to duplicate host classes")
     args = p.parse_args()
-    report = audit(*(json.loads(path.read_text()) for path in (args.host, args.extension, args.refs)))
+    report = audit(*(json.loads(path.read_text()) for path in (args.host, args.extension, args.refs)), allow_duplicates=args.allow_duplicates)
     if args.dex:
         report["sourceDexSha256"] = hashlib.sha256(args.dex.read_bytes()).hexdigest()
-    if report["duplicateClasses"]:
+    if report["duplicateClasses"] and not args.allow_duplicates:
         report["passed"] = False
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

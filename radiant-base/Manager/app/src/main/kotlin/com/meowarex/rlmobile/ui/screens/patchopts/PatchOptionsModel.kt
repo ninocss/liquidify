@@ -19,8 +19,8 @@ import com.meowarex.rlmobile.util.*
 import com.meowarex.rlmobile.manager.download.IDownloadManager
 import com.meowarex.rlmobile.manager.download.KtorDownloadManager
 import com.meowarex.rlmobile.network.services.RadiantLyricsGithubService
-import com.meowarex.rlmobile.network.utils.getOrThrow
 import com.meowarex.rlmobile.network.utils.SemVer
+import com.meowarex.rlmobile.network.utils.getOrThrow
 import com.meowarex.rlmobile.network.utils.preferBundledPatches
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json

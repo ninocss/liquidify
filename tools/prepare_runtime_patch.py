@@ -11,14 +11,13 @@ def activity(text):
 """ + needle)
 
 def settings(text):
-    needle = "    invoke-static/range {v9 .. v21}, Landroidx/compose/foundation/lazy/LazyDslKt;->LazyColumn(Landroidx/compose/ui/Modifier;Landroidx/compose/foundation/lazy/LazyListState;Landroidx/compose/foundation/layout/PaddingValues;ZLandroidx/compose/foundation/layout/Arrangement$Vertical;Landroidx/compose/ui/Alignment$Horizontal;Landroidx/compose/foundation/gestures/FlingBehavior;ZLandroidx/compose/foundation/OverscrollEffect;Lam0/l;Landroidx/compose/runtime/Composer;II)V"
+    needle = "    invoke-interface {p1, v2, v1, v3, v0}, Landroidx/compose/foundation/lazy/LazyListScope;->items(ILam0/l;Lam0/l;Lam0/q;)V"
     assert text.count(needle) == 1
-    return text.replace(needle, """    move-object v10, v11
-    move-object/from16 v11, v18
-    move-object/from16 v12, p0
-    move-object/from16 v13, v19
-    const/4 v14, 0x0
-    invoke-static/range {v9 .. v14}, Ldev/nino/squareglass/DesignEntry;->Screen(Landroidx/compose/ui/Modifier;Landroidx/compose/foundation/layout/PaddingValues;Lam0/l;Ljava/util/List;Landroidx/compose/runtime/Composer;I)V""")
+    return text.replace(needle, needle + """
+
+    iget-object v0, p0, Lcom/aspiro/wamp/settings/compose/n0;->a:Ljava/util/List;
+
+    invoke-static {p1, v0}, Ldev/nino/squareglass/DesignEntry;->append(Landroidx/compose/foundation/lazy/LazyListScope;Ljava/util/List;)V""")
 
 def album(text):
     start=text.index(".method public final c(")
@@ -74,7 +73,7 @@ def playlist(text):
 
 if __name__ == "__main__":
     save("com/aspiro/wamp/MainActivity.smali", "smali", "106-square-runtime-theme.patch", activity, hooked=True)
-    save("com/aspiro/wamp/settings/compose/SettingsScreenKt.smali", "smali_classes21", "107-square-design-settings.patch", settings, hooked=True)
+    save("com/aspiro/wamp/settings/compose/n0.smali", "smali_classes21", "107-square-design-settings.patch", settings)
 
     save("u6/d.smali", "smali_classes19", "108-square-album-header.patch", album)
 

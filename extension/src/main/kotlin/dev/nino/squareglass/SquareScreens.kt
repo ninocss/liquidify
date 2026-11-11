@@ -37,4 +37,10 @@ object SquareScreens {
     /** Legacy settings do not receive the Compose scaffold's accessory insets. */
     @JvmStatic
     fun settingsBottomInset(native: Float): Float = maxOf(native, 180f)
+
+    @JvmStatic
+    fun upload(view: android.view.View) {
+        val bottom = Math.round(96 * view.resources.displayMetrics.density)
+        view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, bottom)
+    }
 }

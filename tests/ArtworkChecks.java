@@ -2,9 +2,9 @@ package dev.nino.squareglass;
 
 public final class ArtworkChecks {
     public static void main(String[] args) {
-        // Exhaust saturated, dark and bright covers against the host's real secondary ink.
+        // Exhaust saturated, dark and bright covers against the host's real text ink.
         for (boolean dark : new boolean[]{false,true}) {
-            int ink=dark ? 0xffb4b8c4 : 0xff5d626d;
+            int ink=dark ? 0xffffffff : 0xff15161a;
             for (int r=0;r<256;r+=17) for (int g=0;g<256;g+=17) for (int b=0;b<256;b+=17) {
                 int surface=CoverColors.surface(0xff000000|r<<16|g<<8|b,dark);
                 if (CoverColors.contrast(surface,ink)<4.5) throw new AssertionError("Unreadable artwork tone");
@@ -16,7 +16,7 @@ public final class ArtworkChecks {
         }
         for (int r=0;r<256;r+=17) for (int g=0;g<256;g+=17) for (int b=0;b<256;b+=17) {
             int surface=CoverColors.playerSurface(0xff000000|r<<16|g<<8|b, false);
-            if (CoverColors.contrast(surface,0xff5d626d)<4.5) throw new AssertionError("Unreadable light portrait player surface");
+            if (CoverColors.contrast(surface,0xff15161a)<4.5) throw new AssertionError("Unreadable light portrait player surface");
         }
         int pink=CoverColors.surface(0xffd976cc,false), blue=CoverColors.surface(0xff3788cf,false);
         if (((pink>>>16)&255)<=((pink>>>8)&255) || (blue&255)<=((blue>>>16)&255))

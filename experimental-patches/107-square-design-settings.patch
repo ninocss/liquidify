@@ -1,16 +1,13 @@
---- a/com/aspiro/wamp/settings/compose/SettingsScreenKt.smali
-+++ b/com/aspiro/wamp/settings/compose/SettingsScreenKt.smali
-@@ -435,7 +435,12 @@
+--- a/com/aspiro/wamp/settings/compose/n0.smali
++++ b/com/aspiro/wamp/settings/compose/n0.smali
+@@ -100,6 +100,10 @@
+     .line 35
+     invoke-interface {p1, v2, v1, v3, v0}, Landroidx/compose/foundation/lazy/LazyListScope;->items(ILam0/l;Lam0/l;Lam0/q;)V
  
-     const/4 v10, 0x0
- 
--    invoke-static/range {v9 .. v21}, Landroidx/compose/foundation/lazy/LazyDslKt;->LazyColumn(Landroidx/compose/ui/Modifier;Landroidx/compose/foundation/lazy/LazyListState;Landroidx/compose/foundation/layout/PaddingValues;ZLandroidx/compose/foundation/layout/Arrangement$Vertical;Landroidx/compose/ui/Alignment$Horizontal;Landroidx/compose/foundation/gestures/FlingBehavior;ZLandroidx/compose/foundation/OverscrollEffect;Lam0/l;Landroidx/compose/runtime/Composer;II)V
-+    move-object v10, v11
-+    move-object/from16 v11, v18
-+    move-object/from16 v12, p0
-+    move-object/from16 v13, v19
-+    const/4 v14, 0x0
-+    invoke-static/range {v9 .. v14}, Ldev/nino/squareglass/DesignEntry;->Screen(Landroidx/compose/ui/Modifier;Landroidx/compose/foundation/layout/PaddingValues;Lam0/l;Ljava/util/List;Landroidx/compose/runtime/Composer;I)V
- 
-     .line 176
-     .line 177
++    iget-object v0, p0, Lcom/aspiro/wamp/settings/compose/n0;->a:Ljava/util/List;
++
++    invoke-static {p1, v0}, Ldev/nino/squareglass/DesignEntry;->append(Landroidx/compose/foundation/lazy/LazyListScope;Ljava/util/List;)V
++
+     .line 36
+     .line 37
+     .line 38

@@ -1,6 +1,6 @@
 --- a/com/tidal/android/feature/home/ui/composables/g.smali
 +++ b/com/tidal/android/feature/home/ui/composables/g.smali
-@@ -915,6 +915,12 @@
+@@ -906,6 +906,12 @@
  
      .line 166
      .line 167

@@ -33,12 +33,58 @@ public final class SquareDetails {
     private static final WeakHashMap<View, Drawable> buttonPaints = new WeakHashMap<>();
     private static final WeakHashMap<View, Integer> buttonColors = new WeakHashMap<>();
     private static final WeakHashMap<View, Drawable> trackPaints = new WeakHashMap<>();
+    private static final WeakHashMap<Drawable, Integer> seedCache = new WeakHashMap<>();
+    private static final WeakHashMap<Bitmap, Integer> bitmapSeedCache = new WeakHashMap<>();
+    private static final WeakHashMap<View, Integer> appliedTints = new WeakHashMap<>();
+
+    public static boolean isPlaceholder(Drawable drawable) {
+        if (drawable == null) return true;
+        Bitmap sample = Hero.sample(drawable);
+        if (sample == null) return false;
+        int[] pixels = new int[24 * 24];
+        sample.getPixels(pixels, 0, 24, 0, 0, 24, 24);
+        sample.recycle();
+        int c0 = pixels[0] & 0xffffff;
+        int c1 = pixels[23] & 0xffffff;
+        int c2 = pixels[pixels.length - 24] & 0xffffff;
+        int c3 = pixels[pixels.length - 1] & 0xffffff;
+        if (c0 == c1 && c1 == c2 && c2 == c3) {
+            int r = (c0 >> 16) & 0xff;
+            int g = (c0 >> 8) & 0xff;
+            int b = c0 & 0xff;
+            if (r < 40 && g < 40 && b < 45 && Math.abs(r - g) <= 6 && Math.abs(g - b) <= 8) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static int coverSeed(Drawable drawable) {
-        Bitmap sample=Hero.sample(drawable);
+        if (drawable == null) return 0xff808080;
+        Integer cached = seedCache.get(drawable);
+        if (cached != null) return cached;
+        if (drawable instanceof BitmapDrawable) {
+            Bitmap bm = ((BitmapDrawable)drawable).getBitmap();
+            if (bm != null) {
+                Integer bmCached = bitmapSeedCache.get(bm);
+                if (bmCached != null) {
+                    seedCache.put(drawable, bmCached);
+                    return bmCached;
+                }
+            }
+        }
+        Bitmap sample = Hero.sample(drawable);
         if (sample == null) return 0xff808080;
-        int[] pixels=new int[24*24]; sample.getPixels(pixels,0,24,0,0,24,24); sample.recycle();
-        return CoverColors.seed(pixels);
+        int[] pixels = new int[24 * 24];
+        sample.getPixels(pixels, 0, 24, 0, 0, 24, 24);
+        sample.recycle();
+        int seed = CoverColors.seed(pixels);
+        seedCache.put(drawable, seed);
+        if (drawable instanceof BitmapDrawable) {
+            Bitmap bm = ((BitmapDrawable)drawable).getBitmap();
+            if (bm != null) bitmapSeedCache.put(bm, seed);
+        }
+        return seed;
     }
 
     private static int dp(View view, int value) {
@@ -71,26 +117,38 @@ public final class SquareDetails {
     }
     private static void foreground(View view, int color) {
         if (view == null) return;
+        Integer current = appliedTints.get(view);
         if (view instanceof androidx.appcompat.widget.Toolbar) {
-            androidx.appcompat.widget.Toolbar toolbar=(androidx.appcompat.widget.Toolbar)view;
+            androidx.appcompat.widget.Toolbar toolbar = (androidx.appcompat.widget.Toolbar)view;
             toolbar.setTitleTextColor(color);
             if (toolbar.getNavigationIcon() != null) toolbar.getNavigationIcon().mutate().setTint(color);
             if (toolbar.getOverflowIcon() != null) toolbar.getOverflowIcon().mutate().setTint(color);
-            android.view.Menu menu=toolbar.getMenu();
-            for (int i=0;i<menu.size();i++) {
-                android.view.MenuItem item=menu.getItem(i);
-                if(item.getIcon()!=null)item.getIcon().mutate().setColorFilter(color,android.graphics.PorterDuff.Mode.SRC_IN);
-                ColorStateList tint=item.getIconTintList();
+            android.view.Menu menu = toolbar.getMenu();
+            for (int i = 0; i < menu.size(); i++) {
+                android.view.MenuItem item = menu.getItem(i);
+                if (item.getIcon() != null) item.getIcon().mutate().setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
+                ColorStateList tint = item.getIconTintList();
                 if (tint == null || tint.getDefaultColor() != color) item.setIconTintList(ColorStateList.valueOf(color));
             }
+            ViewGroup group = (ViewGroup)toolbar;
+            for (int i = 0; i < group.getChildCount(); i++) foreground(group.getChildAt(i), color);
         }
-        if (view instanceof TextView) {
+        else if (view instanceof TextView) {
             TextView text = (TextView)view;
-            text.setTextColor(color);
+            if (text.getCurrentTextColor() != color) text.setTextColor(color);
             for (android.graphics.drawable.Drawable icon : text.getCompoundDrawablesRelative())
                 if (icon != null) icon.mutate().setTint(color);
+            for (android.graphics.drawable.Drawable icon : text.getCompoundDrawables())
+                if (icon != null) icon.mutate().setTint(color);
+            appliedTints.put(view, color);
         }
-        else if (view instanceof ImageView) ((ImageView)view).setImageTintList(ColorStateList.valueOf(color));
+        else if (view instanceof ImageView) {
+            ImageView iv = (ImageView)view;
+            ColorStateList tint = iv.getImageTintList();
+            if (tint == null || tint.getDefaultColor() != color) iv.setImageTintList(ColorStateList.valueOf(color));
+            if (iv.getDrawable() != null) iv.getDrawable().mutate().setTint(color);
+            appliedTints.put(view, color);
+        }
         else if (view instanceof ViewGroup) {
             ViewGroup group = (ViewGroup)view;
             for (int i = 0; i < group.getChildCount(); i++) foreground(group.getChildAt(i), color);
@@ -100,21 +158,25 @@ public final class SquareDetails {
         if (view == null) return;
         boolean dark = SquarePalette.isDark();
         int ink = SquarePalette.ink(dark);
-        int fill=SquarePalette.surface(dark);
+        int fill = SquarePalette.surface(dark);
         view.setBackgroundTintList(null);
-        if(buttonPaints.get(view)==view.getBackground() && Integer.valueOf(fill).equals(buttonColors.get(view))) {
-            foreground(view,ink);return;
+        if (buttonPaints.get(view) == view.getBackground() && Integer.valueOf(fill).equals(buttonColors.get(view))) {
+            foreground(view, ink);
+            return;
         }
         GradientDrawable shape = new GradientDrawable();
-        Drawable fallback=PageMaterial.background(view,SquarePalette.base(dark),28);
+        Drawable fallback = PageMaterial.background(view, SquarePalette.base(dark), 24);
         shape.setColor(fill);
-        shape.setCornerRadius(dp(view, 28));
-        PageGlass.install(view,28,primary);
-        if(PageGlass.hasSurface(view))shape.setColor(android.graphics.Color.TRANSPARENT);
-        Drawable background=PageGlass.hasSurface(view)
-                ? new RippleDrawable(ColorStateList.valueOf(primary ? 0x33777777 : 0x22777777), shape, null)
+        shape.setCornerRadius(dp(view, 24));
+        PageGlass.install(view, 24, primary);
+        if (PageGlass.hasSurface(view)) shape.setColor(android.graphics.Color.TRANSPARENT);
+        int rippleColor = dark ? (primary ? 0x33ffffff : 0x22ffffff) : (primary ? 0x22000000 : 0x18000000);
+        Drawable background = PageGlass.hasSurface(view)
+                ? new RippleDrawable(ColorStateList.valueOf(rippleColor), shape, null)
                 : fallback;
-        view.setBackground(background);buttonPaints.put(view,background);buttonColors.put(view,fill);
+        view.setBackground(background);
+        buttonPaints.put(view, background);
+        buttonColors.put(view, fill);
         foreground(view, ink);
     }
     /** Equal native play controls with a 12dp gap and scalable touch targets. */
@@ -243,7 +305,8 @@ public final class SquareDetails {
             ViewGroup.MarginLayoutParams margins = params;
             margins.topMargin = 0; margins.bottomMargin = 0;
             artwork.setLayoutParams(params);
-            artwork.setForeground(new CoverFade(SquarePalette.base(dark)));
+            if (!(artwork.getForeground() instanceof CoverFade))
+                artwork.setForeground(new CoverFade(SquarePalette.base(dark)));
             artwork.setScaleType(ImageView.ScaleType.FIT_CENTER);
             artwork.setClipToOutline(false);
             artwork.setElevation(0);
@@ -284,7 +347,8 @@ public final class SquareDetails {
                 if(cp instanceof ViewGroup.MarginLayoutParams) {ViewGroup.MarginLayoutParams cm=(ViewGroup.MarginLayoutParams)cp;cm.setMargins(0,0,0,0);cm.setMarginStart(0);cm.setMarginEnd(0);}
                 card.setLayoutParams(cp);
             }
-            cover.setForeground(new CoverFade(SquarePalette.base(dark)));
+            if (!(cover.getForeground() instanceof CoverFade))
+                cover.setForeground(new CoverFade(SquarePalette.base(dark)));
             below(root.findViewById(TITLE),0x7f0b00a9,8);
             below(root.findViewById(0x7f0b00b6),TITLE,8);
             below(root.findViewById(0x7f0b05c1),0x7f0b00b6,8);
@@ -298,8 +362,22 @@ public final class SquareDetails {
             actionRail(root,FIRST,0x7f0b02c6,0x7f0b0370,0x7f0b0274,0x7f0b064c);
             ViewGroup.LayoutParams size=root.getLayoutParams();size.height=-2;root.setLayoutParams(size);
         }
+        ImageView actualCover = null;
+        if (cover instanceof ImageView) actualCover = (ImageView)cover;
+        else if (cover instanceof ViewGroup) {
+            View candidate = cover.findViewById(0x7f0b00b8);
+            if (candidate instanceof ImageView) actualCover = (ImageView)candidate;
+            else {
+                for (int i = 0; i < ((ViewGroup)cover).getChildCount(); i++) {
+                    View ch = ((ViewGroup)cover).getChildAt(i);
+                    if (ch instanceof ImageView) { actualCover = (ImageView)ch; break; }
+                }
+            }
+        }
         ImageView backdrop=root.findViewById(0x7f0b00b9);
-        if(backdrop!=null) { backdrop.setVisibility(View.GONE); hero(root,backdrop); }
+        if(backdrop!=null) backdrop.setVisibility(View.GONE);
+        if(actualCover!=null) hero(root, actualCover);
+        else if(backdrop!=null) hero(root, backdrop);
         for(int id:new int[]{TITLE,0x7f0b00b6,0x7f0b05c1,0x7f0b02c6,0x7f0b0370,0x7f0b0274,0x7f0b064c})
             foreground(root.findViewById(id),SquarePalette.ink(dark));
         controls(root,FIRST,SECOND);
@@ -325,7 +403,8 @@ public final class SquareDetails {
             ((ViewGroup.MarginLayoutParams)params).topMargin=0;
             ((ViewGroup.MarginLayoutParams)params).bottomMargin=0;
             image.setLayoutParams(params); image.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            image.setForeground(new CoverFade(SquarePalette.base(SquarePalette.isDark())));
+            if (!(image.getForeground() instanceof CoverFade))
+                image.setForeground(new CoverFade(SquarePalette.base(SquarePalette.isDark())));
             image.setElevation(0); image.setClipToOutline(false);
             ViewGroup.LayoutParams headerSize=header.getLayoutParams();
             headerSize.height=ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -378,22 +457,27 @@ public final class SquareDetails {
             while (current instanceof coil.drawable.CrossfadeDrawable) current=((coil.drawable.CrossfadeDrawable)current).k;
             boolean dark=SquarePalette.isDark();
             if (current != null && (current != last || dark != lastDark) && current.getIntrinsicWidth()>0) {
+                if (isPlaceholder(current)) return true;
                 Bitmap sample=sample(current);
                 if (sample == null) return true;
                 last=current; lastDark=dark;
                 int[] pixels=new int[24*24]; sample.getPixels(pixels,0,24,0,0,24,24); sample.recycle();
                 int surface=CoverColors.surface(CoverColors.seed(pixels),dark);
                 root.setBackgroundColor(surface);
-                if (artwork.getId() == ARTWORK) artwork.setForeground(new CoverFade(surface));
-                else {
+                if (artwork.getId() == 0x7f0b00b9) {
                     View cover=root.findViewById(0x7f0b00a9);
                     if(cover!=null) cover.setForeground(new CoverFade(surface));
                     artwork.setForeground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                         new int[]{(surface&0xffffff)|0xe6000000,surface}));
+                } else {
+                    View cover=root.findViewById(0x7f0b00a9);
+                    if (cover != null) cover.setForeground(new CoverFade(surface));
+                    else artwork.setForeground(new CoverFade(surface));
                 }
                 View parent=root;
                 while (parent.getParent() instanceof View) {
                     parent=(View)parent.getParent();
+                    parent.setBackgroundColor(surface);
                     View candidate=parent instanceof RecyclerView ? parent : parent.findViewById(0x7f0b05b8);
                     if (candidate instanceof RecyclerView) {
                         candidate.setBackgroundColor(surface);
@@ -442,8 +526,8 @@ public final class SquareDetails {
         @Override protected void onBoundsChange(Rect bounds) {
             int rgb=surface&0xffffff;
             paint.setShader(new LinearGradient(0,bounds.top,0,Math.max(bounds.top+1,bounds.bottom),
-                new int[]{rgb|0xc7000000,rgb,rgb,rgb|0x3d000000,rgb|0xc2000000,surface},
-                new float[]{0,.20f,.56f,.74f,.90f,1},Shader.TileMode.CLAMP));
+                new int[]{rgb|0xb0000000,rgb,rgb,rgb|0x40000000,rgb|0xd8000000,surface,surface},
+                new float[]{0,.22f,.54f,.72f,.88f,.97f,1},Shader.TileMode.CLAMP));
         }
         @Override public void draw(Canvas canvas) {
             canvas.drawRect(((Drawable)this).getBounds(),paint);
@@ -470,14 +554,15 @@ public final class SquareDetails {
         HeaderFade toolbarFade;
         int topInset=-1;
         int toolbarTone;
-        final int[] location=new int[2];
-        final WeakHashMap<View,Drawable> floatingSurfaces=new WeakHashMap<>();
+        int lastMenuCount=-1;
         Binding(View root) {
             this.root = root;
             paint = () -> {
-                foreground(root.findViewById(0x7f0b06ef), SquarePalette.ink(SquarePalette.isDark()));
-                foreground(root.findViewById(0x7f0b0302), SquarePalette.ink(SquarePalette.isDark()));
+                boolean dark = SquarePalette.isDark();
+                foreground(root.findViewById(0x7f0b06ef), SquarePalette.ink(dark));
+                foreground(root.findViewById(0x7f0b0302), SquarePalette.ink(dark));
                 playlistPaint(root);
+                artistPaint(root);
                 View play=root.findViewById(FIRST);
                 if(play!=null && play.getParent() instanceof View) {
                     View header=(View)play.getParent();
@@ -486,6 +571,21 @@ public final class SquareDetails {
                 }
                 topEdge();
             };
+        }
+        private static void artistPaint(View root) {
+            boolean dark = SquarePalette.isDark();
+            int ink = SquarePalette.ink(dark);
+            View artistImage = root.findViewById(0x7f0b03d3);
+            if (artistImage != null && !(artistImage.getForeground() instanceof CoverFade)) {
+                artistImage.setForeground(new CoverFade(SquarePalette.base(dark)));
+            }
+            for (int id : new int[]{0x7f0b0324, 0x7f0b0569, 0x7f0b0108, 0x7f0b0109, 0x7f0b00e3, 0x7f0b00e4}) {
+                View v = root.findViewById(id);
+                if (v != null) {
+                    if (v.isClickable()) button(v, false);
+                    else foreground(v, ink);
+                }
+            }
         }
         private void topEdge() {
             View header=root.findViewById(0x7f0b057a);
@@ -500,7 +600,8 @@ public final class SquareDetails {
                     lp.topToTop=0;lp.topToBottom=-1;((ViewGroup.MarginLayoutParams)lp).topMargin=0;((View)list).setLayoutParams(lp);
                 }
             }
-            header.setPadding(header.getPaddingLeft(),0,header.getPaddingRight(),header.getPaddingBottom());
+            if (header.getPaddingTop() != 0)
+                header.setPadding(header.getPaddingLeft(),0,header.getPaddingRight(),header.getPaddingBottom());
             if (image.getLayoutParams() instanceof ConstraintLayout.LayoutParams) {
                 ConstraintLayout.LayoutParams p=(ConstraintLayout.LayoutParams)image.getLayoutParams();
                 ViewGroup.MarginLayoutParams margins=p;
@@ -517,8 +618,17 @@ public final class SquareDetails {
             View toolbar=root.findViewById(0x7f0b0302);if(toolbar==null)toolbar=root.findViewById(0x7f0b06ef);
             if (toolbar != null) {
                 PageCoordinator.toolbarInset(toolbar,top);toolbar.setElevation(dp(root,4));
-                int tone=SquarePalette.surface(SquarePalette.isDark());
-                if (toolbarTone != tone) { toolbarTone=tone; floatingSurfaces.clear(); }
+                boolean dark = SquarePalette.isDark();
+                int tone=SquarePalette.surface(dark);
+                int ink=SquarePalette.ink(dark);
+                if (toolbar instanceof androidx.appcompat.widget.Toolbar) {
+                    int menuCount = ((androidx.appcompat.widget.Toolbar)toolbar).getMenu().size();
+                    if (menuCount != lastMenuCount || toolbarTone != tone) {
+                        lastMenuCount = menuCount;
+                        foreground(toolbar, ink);
+                    }
+                }
+                toolbarTone = tone;
                 if (toolbar instanceof ViewGroup) {
                     Drawable pagePaint=header.getBackground();
                     int pageTone=pagePaint instanceof android.graphics.drawable.ColorDrawable ? ((android.graphics.drawable.ColorDrawable)pagePaint).getColor() : tone;
@@ -531,41 +641,24 @@ public final class SquareDetails {
                     if(toolbarFade==null) toolbarFade=new HeaderFade(pageTone);
                     toolbarFade.update(pageTone,HeaderProgress.opacity(distance,dp(root,64)));
                     if(toolbar.getBackground()!=toolbarFade) toolbar.setBackground(toolbarFade);
-                    ViewGroup group=(ViewGroup)toolbar;
-                    int edge=dp(toolbar,12);
-                    if(toolbar.getPaddingStart()!=edge || toolbar.getPaddingEnd()!=edge)
-                        toolbar.setPaddingRelative(edge,toolbar.getPaddingTop(),edge,toolbar.getPaddingBottom());
-                    for (int i=0;i<group.getChildCount();i++) {
-                        View child=group.getChildAt(i);
-                        if (child instanceof android.widget.ImageButton) floating(child,tone);
-                        else if (child instanceof ViewGroup && child.getClass().getName().contains("ActionMenuView")) {
-                            ViewGroup menu=(ViewGroup)child;
-                            for (int j=0;j<menu.getChildCount();j++) floating(menu.getChildAt(j),tone);
-                        }
-                    }
                 }
             }
         }
-        private void floating(View view,int tone) {
-            // Keep a 48dp native touch target around a 40dp glass circle. Native
-            // menu items and back navigation retain their own callbacks.
-            int target=dp(view,48),padding=dp(view,12);
-            ViewGroup.LayoutParams p=view.getLayoutParams();
-            if(p!=null && (p.width!=target || p.height!=target)) {
-                p.width=target;p.height=target;view.setLayoutParams(p);
+        private int lastDistance = -1;
+        private int lastTop = -1;
+        @Override public boolean onPreDraw() {
+            int top = 0;
+            android.view.WindowInsets insets = root.getRootWindowInsets();
+            if (insets != null) top = insets.getInsets(android.view.WindowInsets.Type.statusBars()).top;
+            int distance = list == null ? 0 : list.computeVerticalScrollOffset();
+            int tone = SquarePalette.surface(SquarePalette.isDark());
+            if (distance != lastDistance || top != lastTop || tone != toolbarTone) {
+                lastDistance = distance;
+                lastTop = top;
+                topEdge();
             }
-            view.setMinimumWidth(target);view.setMinimumHeight(target);
-            if(view instanceof ImageView) {
-                if(view.getPaddingLeft()!=padding || view.getPaddingTop()!=padding)
-                    view.setPadding(padding,padding,padding,padding);
-                ((ImageView)view).setScaleType(ImageView.ScaleType.FIT_CENTER);
-            }
-            view.setBackgroundTintList(null);
-            if (floatingSurfaces.containsKey(view) && floatingSurfaces.get(view) == view.getBackground()) return;
-            Drawable ripple=new android.graphics.drawable.InsetDrawable(PageMaterial.background(view,tone,20),dp(view,4));
-            view.setBackground(ripple); floatingSurfaces.put(view,ripple);
+            return true;
         }
-        @Override public boolean onPreDraw() { topEdge(); return true; }
         @Override public void onViewAttachedToWindow(View view) {
             if(observing)return;
             View candidate = root.findViewById(0x7f0b05b8);
@@ -588,7 +681,7 @@ public final class SquareDetails {
         }
         @Override public void onChildViewDetachedFromWindow(View child) {}
         @Override public void onScrolled(RecyclerView view, int dx, int dy) {
-            root.removeCallbacks(paint); root.post(paint);
+            topEdge();
         }
         @Override public void onViewDetachedFromWindow(View view) {
             root.removeCallbacks(paint);

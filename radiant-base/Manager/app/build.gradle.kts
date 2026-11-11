@@ -37,6 +37,7 @@ abstract class BundleLiquidifyAssets : DefaultTask() {
             "tidalVersionCode" to tidal["versionCode"],
             "tidalApkUrl" to tidal["url"],
             "patchesVersion" to identity["version"],
+            "tidalSha256" to tidal["sha256"],
         )))
         patchesFile.get().asFile.copyTo(output.resolve("patches.zip"), overwrite = true)
     }
@@ -58,8 +59,8 @@ android {
         applicationId = "dev.nino.squareglass.manager"
         minSdk = 24
         targetSdk = 36
-        versionCode = 73
-        versionName = "1.1.1-beta.1"
+        versionCode = 74
+        versionName = "1.2.0-beta"
 
         vectorDrawables {
             useSupportLibrary = true
@@ -211,6 +212,16 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.add("-Xlint:-options")
 }
 
+// ARSCLib ships stub android classes, R8 hates them
+val arsclibRaw: Configuration by configurations.creating { isTransitive = false }
+val strippedArsclib = tasks.register<Jar>("strippedArsclib") {
+    archiveFileName = "arsclib-stripped.jar"
+    destinationDirectory = layout.buildDirectory.dir("libs-stripped")
+    from({ arsclibRaw.map { zipTree(it) } }) {
+        exclude("android/**", "org/xmlpull/**", "META-INF/MANIFEST.MF")
+    }
+}
+
 dependencies {
     testImplementation("junit:junit:4.13.2")
     implementation(libs.bundles.accompanist)
@@ -238,6 +249,8 @@ dependencies {
     implementation(libs.hiddenApi.bypass)
 
     implementation(libs.apksig)
+    arsclibRaw(libs.arsclib)
+    implementation(files(strippedArsclib))
     implementation(libs.axml)
     implementation(libs.bouncycastle)
     implementation(libs.binaryResources)

@@ -25,6 +25,18 @@ public final class QueueGlass {
             ((ImageView)view).setImageTintList(ColorStateList.valueOf(SquarePalette.ink(SquarePalette.isDark())));
         if(view instanceof ViewGroup) for(int i=0;i<((ViewGroup)view).getChildCount();i++) icons(((ViewGroup)view).getChildAt(i));
     }
+    private static void roundThumbnails(View view) {
+        if (view instanceof ImageView && (view.getId() == 0x7f0b00b8 || view.getId() == 0x7f0b03d3)) {
+            int r = Math.round(10 * view.getResources().getDisplayMetrics().density);
+            view.setOutlineProvider(new android.view.ViewOutlineProvider() {
+                @Override public void getOutline(View v, android.graphics.Outline outline) {
+                    outline.setRoundRect(0, 0, v.getWidth(), v.getHeight(), r);
+                }
+            });
+            view.setClipToOutline(true);
+        }
+        if (view instanceof ViewGroup) for (int i = 0; i < ((ViewGroup)view).getChildCount(); i++) roundThumbnails(((ViewGroup)view).getChildAt(i));
+    }
     public static void install(View root) {
         if(SquareSettings.themeEnabled()==0 || !(root instanceof ViewGroup)) return;
         Context context=root.getContext();
@@ -57,7 +69,7 @@ public final class QueueGlass {
         }
         SquareExplore.install(root);
         SurfaceMotion.enter(root,false,true);
-        root.post(() -> { if(root.isAttachedToWindow()) icons(root); });
+        root.post(() -> { if(root.isAttachedToWindow()) { icons(root); roundThumbnails(root); } });
         root.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             public void onViewAttachedToWindow(View view) {}
             public void onViewDetachedFromWindow(View view) { glass.release(); root.removeOnAttachStateChangeListener(this); }

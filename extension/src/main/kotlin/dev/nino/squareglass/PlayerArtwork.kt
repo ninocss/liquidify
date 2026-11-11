@@ -94,6 +94,29 @@ object PlayerArtwork {
     fun header(original: Modifier): Modifier = original.zIndex(2f)
 
     @Composable
+    private fun atBottom(original: Modifier): Modifier {
+        val view = LocalView.current
+        val frame = currentFrame()
+        var top by remember { mutableStateOf(0) }
+        return original.onGloballyPositioned {
+            val next = frame.top(it)
+            if (top != next) top = next
+        }.layout { measurable, constraints ->
+            val child = measurable.measure(constraints)
+            val height = frame.height.takeIf { it > 0 } ?: view.height
+            val insets = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                view.rootWindowInsets?.getInsets(android.view.WindowInsets.Type.navigationBars())?.bottom ?: 0
+            } else {
+                @Suppress("DEPRECATION")
+                view.rootWindowInsets?.systemWindowInsetBottom ?: 0
+            }
+            val bottomPadding = if (insets > 0) insets else (view.resources.displayMetrics.density * 8).roundToInt()
+            val targetY = maxOf(0, height - child.height - bottomPadding)
+            layout(child.width, child.height) { child.place(0, targetY - top) }
+        }
+    }
+
+    @Composable
     private fun atHeight(original: Modifier, fraction: Float): Modifier {
         val view = LocalView.current
         val frame = currentFrame()
@@ -122,12 +145,16 @@ object PlayerArtwork {
     @JvmStatic
     @Composable
     fun media(original: Modifier): Modifier {
-        return original.then(ink(Modifier))
+        val view = LocalView.current
+        return original.layout { measurable, constraints ->
+            val child = measurable.measure(constraints)
+            layout(child.width, child.height) { child.place(0, -(view.height * .035f).roundToInt()) }
+        }.then(ink(Modifier))
     }
 
     @JvmStatic
     @Composable
-    fun footer(original: Modifier): Modifier = atHeight(original, .905f).then(ink(Modifier)).zIndex(2f)
+    fun footer(original: Modifier): Modifier = atBottom(original).then(ink(Modifier)).zIndex(2f)
 
     @JvmStatic
     @OptIn(InternalComposeApi::class)
@@ -160,9 +187,10 @@ object PlayerArtwork {
     @Composable
     fun cover(original: Modifier): Modifier {
         DesignState.revision
-        val color = surface
-        val topFilm = Color(SquarePalette.base(NativeGlass.dark))
+        val isDark = NativeGlass.dark
         return original.drawWithCache {
+            val color = surface
+            val topFilm = Color(SquarePalette.base(isDark))
             val saturation = ColorMatrix().apply { setToSaturation(1.28f) }
             val artworkPaint = Paint().apply { colorFilter = ColorMatrixColorFilter(saturation) }
             val fade = Brush.verticalGradient(
@@ -171,6 +199,7 @@ object PlayerArtwork {
                 Pair(.48f, color.copy(alpha = 0f)),
                 Pair(.66f, color.copy(alpha = .18f)),
                 Pair(.84f, color.copy(alpha = .80f)),
+                Pair(.96f, color),
                 Pair(1f, color),
                 endY = size.height,
             )

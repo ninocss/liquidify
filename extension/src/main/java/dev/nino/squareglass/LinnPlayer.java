@@ -63,8 +63,8 @@ public final class LinnPlayer implements k0 {
         for(u0 item:queue.getItems()) {
             MediaItem media=item.getMediaItem();
             if(!(media instanceof Track) || ((Track)media).isUpload() || media.getId()<=0){
-                String reason=!(media instanceof Track)?"kein Online-Musiktitel":((Track)media).isUpload()?"Upload":"keine gültige TIDAL-ID";
-                throw new Exception("Linn: Titel "+(tracks.size()+1)+" der Warteschlange ist nicht unterstützt ("+reason+"). Bitte eine reine Online-Musikqueue wählen.");
+                String reason=!(media instanceof Track)?"not an online music track":((Track)media).isUpload()?"Upload":"no valid TIDAL ID";
+                throw new Exception("Linn: Track "+(tracks.size()+1)+" in queue is unsupported ("+reason+"). Please select an online music queue.");
             }
             tracks.add(media);
             occurrences.add(item.getUid()+":"+media.getId());
@@ -86,7 +86,7 @@ public final class LinnPlayer implements k0 {
         return provider.app.getSharedPreferences("squareglass_linn",0);
     }
     void transfer() throws Exception {
-        provider.phase(LinnProvider.Phase.CHECKING,"Gerät prüfen…");
+        provider.phase(LinnProvider.Phase.CHECKING,"Checking device…");
         OpenHome s=device.transport;
         token=s.preflight();int max=Integer.parseInt(s.read("Playlist","TracksMax"));
         String source=s.read("Product","SourceIndex");int playlistSource=s.playlistIndex();
@@ -111,7 +111,7 @@ public final class LinnPlayer implements k0 {
         boolean committed=false,switched=false;
         try{
             transaction.stage(() -> generation==provider.generation && !closed,
-                count -> provider.phase(LinnProvider.Phase.TRANSFERRING,"Warteschlange "+count+"/"+incoming.size()));
+                count -> provider.phase(LinnProvider.Phase.TRANSFERRING,"Queue transfer "+count+"/"+incoming.size()));
             remote.addAll(transaction.remote);
             LinnQueueTransaction.requireCurrent(() -> generation==provider.generation && !closed);
             int selected=nativeIndices.indexOf(index);
@@ -134,7 +134,7 @@ public final class LinnPlayer implements k0 {
                     selected=nativeIndices.indexOf(index);
                 }
             }
-            provider.phase(LinnProvider.Phase.CONFIRMING,"Wiedergabe bestätigen…");
+            provider.phase(LinnProvider.Phase.CONFIRMING,"Confirming playback…");
             switched=true;
             if(!sameStream)s.call("Playlist","Pause");
             if(!source.equals(Integer.toString(playlistSource)))s.call("Product","SetSourceIndex",Integer.toString(playlistSource));
@@ -250,8 +250,8 @@ public final class LinnPlayer implements k0 {
                 failedObservations=0;if(provider.phase==LinnProvider.Phase.RECONNECTING)provider.phase(LinnProvider.Phase.ACTIVE,"");
                 provider.main.post(() -> {if(!closed && !syncing && revision==controlRevision.get()){position=observedPosition;duration=observedDuration;NativeLinnBridge.publish(state,position,duration);}});return;
             }
-            if(ready){s.read("Playlist","TransportState");failedObservations=0;if(provider.phase==LinnProvider.Phase.RECONNECTING)provider.phase(LinnProvider.Phase.READY,"Bereit – Musik auswählen");return;}
-            if(!s.playlistSource()){ready=true;state=MusicServiceState.PAUSED;provider.phase(LinnProvider.Phase.READY,"Andere Quelle aktiv – Musik auswählen");return;}
+            if(ready){s.read("Playlist","TransportState");failedObservations=0;if(provider.phase==LinnProvider.Phase.RECONNECTING)provider.phase(LinnProvider.Phase.READY,"Ready – select music");return;}
+            if(!s.playlistSource()){ready=true;state=MusicServiceState.PAUSED;provider.phase(LinnProvider.Phase.READY,"Other source active – select music");return;}
             List<Long> actual=s.ids();
             if(!actual.equals(remote) && !syncing){adoptRemote(actual);return;}
             long id=Long.parseLong(s.read("Playlist","Id"));
@@ -276,7 +276,7 @@ public final class LinnPlayer implements k0 {
                             s.call("Playlist","Stop");
                             for(long entry:remote){if(!s.ids().equals(expected))throw new IOException("Queue changed in another controller");s.call("Playlist","DeleteId",Long.toString(entry));expected.remove(entry);}
                             remote.clear();nativeIndices.clear();ready=true;
-                            provider.phase(LinnProvider.Phase.READY,"Bereit – Musik auswählen");
+                            provider.phase(LinnProvider.Phase.READY,"Ready – select music");
                         });
                     }else synchronize(queue.getCurrentItemPosition(),state==MusicServiceState.PLAYING,position);
                     return;
@@ -287,7 +287,7 @@ public final class LinnPlayer implements k0 {
         }catch(Exception failure){
             if(closed || syncing || provider.connecting || revision!=controlRevision.get())return;
             failedObservations++;
-            provider.phase(LinnProvider.Phase.RECONNECTING,"Verbindung unterbrochen – erneut verbinden…");
+            provider.phase(LinnProvider.Phase.RECONNECTING,"Connection lost – reconnecting…");
             OpenHome.trace.record("observation_failed count="+failedObservations+" type="+failure.getClass().getSimpleName());
         }finally{OpenHome.deadline.remove();}
     }
@@ -317,7 +317,7 @@ public final class LinnPlayer implements k0 {
                 provider.controls.execute(() -> {
                     if(closed || syncing || provider.connecting || provider.player!=this)return;
                     readdress(replacement);provider.connected=replacement;provider.devices.put(replacement.a,replacement);
-                    provider.phase(ready?LinnProvider.Phase.READY:LinnProvider.Phase.ACTIVE,ready?"Bereit – Musik auswählen":"");
+                    provider.phase(ready?LinnProvider.Phase.READY:LinnProvider.Phase.ACTIVE,ready?"Ready – select music":"");
                 });
                 return;
             }

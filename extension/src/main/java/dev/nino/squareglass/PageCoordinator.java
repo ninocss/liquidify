@@ -62,7 +62,6 @@ public final class PageCoordinator {
                 View view=fragment.getView();if(view!=null) bind(fragment,view);
             }
             @Override public void onFragmentViewDestroyed(FragmentManager fm,Fragment fragment) {
-                NativeBackdrop.transition();
                 View view=fragment.getView();WeakReference<Page> ref=pages.remove(view);
                 if(ref!=null && ref.get()!=null) ref.get().destroy();
             }
@@ -176,6 +175,8 @@ public final class PageCoordinator {
                     shell.setElevation(dp(4));bar.setBackgroundColor(Color.TRANSPARENT);chromeSurface=shell;
                 }
                 collectionControls();
+                View createBtn=findNamed(root,"createButton");
+                if(createBtn!=null) {createBtn.setElevation(dp(2));SquareDetails.control(createBtn,true);}
             } else {
                 primary.addItemDecoration(hero);
                 if(((View)primary).getLayoutParams() instanceof ConstraintLayout.LayoutParams) {
@@ -256,10 +257,9 @@ public final class PageCoordinator {
             // Native context actions identify actionable media; never synthesize actions for category cards.
             if(row.isLongClickable() && row.hasOnClickListeners()) SquareGestures.bind(row);
             if(search && row.isClickable() && row.getHeight()>=dp(28)) {
-                if(PageGlass.hasSurface(row)) {if(hero!=null)hero.collect(row);return;}
                 Drawable current=materials.get(row);
                 if(current==null || row.getBackground()!=current) {
-                    Drawable paint=PageMaterial.background(row,tone,16);row.setBackground(paint);materials.put(row,paint);PageGlass.install(row,16);
+                    Drawable paint=PageMaterial.background(row,tone,16);row.setBackground(paint);materials.put(row,paint);
                 }
             }
             if(hero!=null) hero.collect(row);
@@ -274,12 +274,11 @@ public final class PageCoordinator {
                 if(primary!=null)((View)primary).setBackgroundColor(tone);
             }
             if(hero!=null) {
-                for(int i=0;i<((ViewGroup)primary).getChildCount();i++) hero.collect(((ViewGroup)primary).getChildAt(i));
                 int color=hero.surface(dark);
                 if(tone!=color) {tone=color;root.setBackgroundColor(tone);((View)primary).setBackgroundColor(tone);}
                 topEdge();header();
             }
-            if(title!=null && hero==null) header();
+            if(title!=null && hero==null) { topEdge(); header(); }
             if(title!=null && root.getRootView()!=root) {
                 root.getRootView().setBackgroundColor(SquarePalette.base(dark));
             }
@@ -305,7 +304,7 @@ public final class PageCoordinator {
             int offset=((View)primary).canScrollVertically(-1)?primary.computeVerticalScrollOffset():0;
             if(heroView!=null)for(View v=heroView;v.getParent() instanceof View && v!=root;v=(View)v.getParent())
                 if(v.getClass().getName().equals("com.google.android.material.appbar.AppBarLayout"))offset+=Math.max(0,-v.getTop());
-            fade.update(tone,Math.max(.88f,HeaderProgress.opacity(offset,dp(64))));if(scrim.getBackground()!=fade)scrim.setBackground(fade);
+            fade.update(tone, HeaderProgress.opacity(offset, dp(96)) * 0.94f);if(scrim.getBackground()!=fade)scrim.setBackground(fade);
         }
         @Override public void onViewAttachedToWindow(View view) {
             if(!watching) {
@@ -349,17 +348,24 @@ public final class PageCoordinator {
         @Override public void getItemOffsets(Rect out,View view,RecyclerView parent,RecyclerView.State state) {
             if(parent.getChildAdapterPosition(view)==0)out.top=height(parent);
         }
+        private final WeakHashMap<ImageView, Drawable> seenDrawables = new WeakHashMap<>();
+
         void collect(View view) {
             if(covers.size()>=4)return;
-            if(view instanceof ImageView && (view.getId()==0x7f0b00b8 || view.getId()==0x7f0b03d3)) {
-                Drawable source=((ImageView)view).getDrawable();
-                while(source instanceof coil.drawable.CrossfadeDrawable)source=((coil.drawable.CrossfadeDrawable)source).k;
+            if(view instanceof ImageView && (view.getId()==0x7f0b00b8 || view.getId()==0x7f0b03d3 || view.getId()==0x7f0b00a9)) {
+                ImageView iv = (ImageView)view;
+                Drawable source = iv.getDrawable();
+                if (source == null || seenDrawables.get(iv) == source) return;
+                seenDrawables.put(iv, source);
+                while(source instanceof coil.drawable.CrossfadeDrawable) source = ((coil.drawable.CrossfadeDrawable)source).k;
                 if(source instanceof BitmapDrawable && source.getIntrinsicWidth()>1 && source.getConstantState()!=null) {
-                    int seed=SquareDetails.coverSeed(source);
-                    if(!seeds.contains(seed)) {
-                        Drawable copy=source.getConstantState().newDrawable().mutate();copy.setAlpha(255);covers.add(copy);seeds.add(seed);
-                        page.snapshot.covers.add(copy.getConstantState().newDrawable().mutate());page.snapshot.seeds.add(seed);
-                        if(page.primary!=null)((View)page.primary).invalidate();if(page.heroView!=null)page.heroView.invalidate();
+                    if (!SquareDetails.isPlaceholder(source)) {
+                        int seed=SquareDetails.coverSeed(source);
+                        if(!seeds.contains(seed)) {
+                            Drawable copy=source.getConstantState().newDrawable().mutate();copy.setAlpha(255);covers.add(copy);seeds.add(seed);
+                            page.snapshot.covers.add(copy.getConstantState().newDrawable().mutate());page.snapshot.seeds.add(seed);
+                            if(page.primary!=null)((View)page.primary).invalidate();if(page.heroView!=null)page.heroView.invalidate();
+                        }
                     }
                 }
             }
@@ -391,7 +397,7 @@ public final class PageCoordinator {
                     int l=Math.round(width*.34f),r=Math.round(width*.66f);symbol.setBounds(l,l,r,r);symbol.draw(canvas);
                 }
             } else {
-                int count=covers.size();int cells=count==1?1:4;
+                int count=covers.size();int cells=count>=4?4:1;
                 float size=cells==1?width:width/2;
                 for(int i=0;i<cells;i++) {
                     Drawable art=covers.get(i%count);int x=Math.round((i%2)*size),y=Math.round((i/2)*size);

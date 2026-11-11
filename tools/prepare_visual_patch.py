@@ -100,22 +100,21 @@ def dynamic_color(text, owner, expected):
 def glass_buttons(text):
     needle = "    invoke-static/range {v1 .. v9}, Landroidx/compose/material3/IconButtonKt;->IconButton("
     assert text.count(needle) == 1
-    return text.replace(needle, """    invoke-static {v2, v7, v9}, Ldev/nino/squareglass/NativeGlass;->playerButton(Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)Landroidx/compose/ui/Modifier;
-
-    move-result-object v2
-
-""" + needle)
+    return text.replace(needle, "    invoke-static/range {v1 .. v9}, Ldev/nino/squareglass/NativeGlass;->playerIconButton(")
 
 
 def marquee_clip(text):
     needle = "    invoke-static/range {v25 .. v33}, Landroidx/compose/foundation/BasicMarqueeKt;->"
     assert text.count(needle) == 2
     # v25 is shared by both text rows; clip outside the marquee drawing layer.
-    return text.replace(needle, """    invoke-static/range {v25 .. v25}, Landroidx/compose/ui/draw/ClipKt;->clipToBounds(Landroidx/compose/ui/Modifier;)Landroidx/compose/ui/Modifier;
+    text = text.replace(needle, """    invoke-static/range {v25 .. v25}, Landroidx/compose/ui/draw/ClipKt;->clipToBounds(Landroidx/compose/ui/Modifier;)Landroidx/compose/ui/Modifier;
 
     move-result-object v25
 
 """ + needle, 1)
+    old = "    invoke-static {v7}, Landroidx/compose/foundation/shape/RoundedCornerShapeKt;->RoundedCornerShape-0680j_4(F)Landroidx/compose/foundation/shape/RoundedCornerShape;"
+    assert text.count(old) == 1
+    return text.replace(old, "    invoke-static {v7}, Ldev/nino/squareglass/SquareShapes;->artwork(F)Landroidx/compose/foundation/shape/RoundedCornerShape;")
 
 
 def player_artwork(text):

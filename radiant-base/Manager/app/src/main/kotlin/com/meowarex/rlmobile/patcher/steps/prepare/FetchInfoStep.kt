@@ -46,9 +46,22 @@ class FetchInfoStep(private val localPatches: Boolean = false) : Step(), KoinCom
             loadBundled(container)
             return
         }
+
+        val bundled = getBundledBuildInfo()
+        val bundledVer = bundled?.patchesVersion
+
         // Fetch the latest release and refresh the cache (when online)
         if (context.isOnline()) {
             try {
+                if (bundledVer != null) {
+                    val release = github.getLatestRelease(force = true).getOrThrow()
+                    val remoteVer = com.meowarex.rlmobile.network.utils.SemVer.parseOrNull(release.tagName)
+                    if (remoteVer == null || remoteVer <= bundledVer) {
+                        container.log("Bundled Liquidify patches ($bundledVer) are up-to-date with remote (${release.tagName}); skipping remote download")
+                        loadBundled(container)
+                        return
+                    }
+                }
                 fetchFromRemote(container)
                 return
             } catch (e: CancellationException) {
@@ -61,6 +74,11 @@ class FetchInfoStep(private val localPatches: Boolean = false) : Step(), KoinCom
             container.log("No network connection — using cached release info for a local re-patch")
         }
 
+        if (bundled != null) {
+            loadBundled(container)
+            return
+        }
+
         val cached = ReleaseInfoCache.load(paths, json)
         if (cached == null || preferBundledPatches(SemVer.parse(BuildConfig.VERSION_NAME), cached.data.patchesVersion)) {
             loadBundled(container)
@@ -70,6 +88,16 @@ class FetchInfoStep(private val localPatches: Boolean = false) : Step(), KoinCom
         patchesAssetUrl = cached.patchesAssetUrl
         container.log("Using cached build info: $data")
         container.log("Cached patches asset URL: $patchesAssetUrl")
+    }
+
+    private fun getBundledBuildInfo(): RLBuildInfo? {
+        return try {
+            context.assets.open("liquidify/data.json").bufferedReader().use {
+                json.decodeFromString<RLBuildInfo>(it.readText())
+            }
+        } catch (_: Throwable) {
+            null
+        }
     }
 
     private fun loadBundled(container: StepRunner) {

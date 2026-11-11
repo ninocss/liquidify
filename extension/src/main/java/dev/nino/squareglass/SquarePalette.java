@@ -14,6 +14,7 @@ public final class SquarePalette {
     private static final Map<String, f20.a> darkColors = new HashMap<>();
 
     public static boolean isDark() {
+        if (SquareSettings.themeEnabled() == 0) return true;
         int mode = SquareSettings.themeMode();
         if (mode != 0) return mode == 2;
         return (Resources.getSystem().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)

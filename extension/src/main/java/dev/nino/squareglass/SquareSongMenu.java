@@ -89,6 +89,9 @@ final class SquareSongMenu extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         layout = new LinearLayout(listView.getContext()); layout.setOrientation(LinearLayout.VERTICAL);
         // Keep the native list's header-relative placement on its replacement container.
         parent.addView(layout, index, original);
+        list.setNestedScrollingEnabled(true);
+        list.setClipToPadding(false);
+        list.setPadding(0, 0, 0, dp(16));
         layout.addView(list, new LinearLayout.LayoutParams(-1, 0, 1));
         if(playerMenu) {
             View timer=SleepTimer.button(listView.getContext(),glass);
