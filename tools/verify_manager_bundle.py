@@ -16,6 +16,7 @@ def verify(apk):
         'tidalVersionCode': tidal['versionCode'],
         'tidalApkUrl': tidal['url'],
         'patchesVersion': release['version'],
+        'tidalSha256': tidal['sha256'],
     }
     with zipfile.ZipFile(apk) as manager:
         assert json.loads(manager.read('assets/liquidify/data.json')) == expected
